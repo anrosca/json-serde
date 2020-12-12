@@ -1087,11 +1087,75 @@ public class JsonSerdeTest {
         assertEquals(expectedInstance, actualInstance);
     }
 
+    @Test
+    public void shouldBeAbleToSerializeToJson_objectWithNullFieldsOfTypeClass() {
+        NullClassFields nullClassFields = new NullClassFields(null, "Mike");
+
+        String actualJson = jsonSerde.serialize(nullClassFields);
+
+        String expectedJson = """
+                {
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$NullClassFields",
+                  "state": {
+                    "targetClass": {"type": "java.lang.Class", "value": null},
+                    "name": {"type": "java.lang.String", "value": "Mike"}
+                  },
+                  "__idRef": 1
+                }""";
+        assertJsonEquals(expectedJson, actualJson);
+    }
+
+    @Test
+    public void shouldBeAbleToDeserializeToJson_objectWithNullFieldsOfTypeClass() {
+        String json = """
+                {
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$NullClassFields",
+                  "state": {
+                    "targetClass": {"type": "java.lang.Class", "value": null},
+                    "name": {"type": "java.lang.String", "value": "Mike"}
+                  },
+                  "__idRef": 1
+                }""";
+
+        NullClassFields actualInstance = jsonSerde.deserialize(json, NullClassFields.class);
+
+        NullClassFields expectedInstance = new NullClassFields(null, "Mike");
+        assertEquals(expectedInstance, actualInstance);
+    }
+
     private void assertJsonEquals(String expectedJson, String actualJson) {
         try {
             assertEquals(objectMapper.readTree(expectedJson), objectMapper.readTree(actualJson));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static class NullClassFields {
+        private final Class<?> targetClass;
+        private final String name;
+
+        public NullClassFields(Class<?> targetClass, String name) {
+            this.targetClass = targetClass;
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            NullClassFields that = (NullClassFields) o;
+
+            if (targetClass != null ? !targetClass.equals(that.targetClass) : that.targetClass != null) return false;
+            return name != null ? name.equals(that.name) : that.name == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = targetClass != null ? targetClass.hashCode() : 0;
+            result = 31 * result + (name != null ? name.hashCode() : 0);
+            return result;
         }
     }
 

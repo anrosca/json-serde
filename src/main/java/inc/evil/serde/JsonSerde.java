@@ -300,7 +300,9 @@ public class JsonSerde {
     }
 
     private Object getValueAs(JsonNode value, String type) throws Exception {
-        if (type != null) {
+        if (value == null || value.asText().equals("null")) {
+            return null;
+        } else if (type != null) {
             if (type.equals("__ref")) {
                 return deserializedInstances.get(value.asText());
             }
