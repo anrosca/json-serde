@@ -16,8 +16,45 @@ import java.time.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 public class JsonSerde {
+    private static final String REFERENCE_TO_OBJECT = "__ref";
+    private static final String FIELD_ID = "__idRef";
+    private static final Class<?>[][] WRAPPER_TYPES = {
+            {Boolean.class, boolean.class},
+            {Byte.class, byte.class},
+            {Character.class, char.class},
+            {Short.class, short.class},
+            {Integer.class, int.class},
+            {Long.class, long.class},
+            {Float.class, float.class},
+            {Double.class, double.class},
+    };
+    private static final Map<Class<?>, Function<Object, Object>> castingFunction = new HashMap<>();
+
+    static {
+        castingFunction.put(boolean.class, (value) -> (boolean) value);
+        castingFunction.put(Boolean.class, (value) -> (boolean) value);
+        castingFunction.put(byte.class, (value) -> ((Number) value).byteValue());
+        castingFunction.put(Byte.class, (value) -> ((Number) value).byteValue());
+        castingFunction.put(char.class, (value) -> (char) (((Number) value).intValue()));
+        castingFunction.put(Character.class, (value) -> (char) (((Number) value).intValue()));
+        castingFunction.put(short.class, (value) -> ((Number) value).shortValue());
+        castingFunction.put(Short.class, (value) -> ((Number) value).shortValue());
+        castingFunction.put(int.class, (value) -> ((Number) value).intValue());
+        castingFunction.put(Integer.class, (value) -> ((Number) value).intValue());
+        castingFunction.put(long.class, (value) -> ((Number) value).longValue());
+        castingFunction.put(Long.class, (value) -> ((Number) value).longValue());
+        castingFunction.put(float.class, (value) -> ((Number) value).floatValue());
+        castingFunction.put(Float.class, (value) -> ((Number) value).floatValue());
+        castingFunction.put(double.class, (value) -> ((Number) value).doubleValue());
+        castingFunction.put(Double.class, (value) -> ((Number) value).doubleValue());
+        castingFunction.put(AtomicInteger.class, (value) -> new AtomicInteger(((Number) value).intValue()));
+        castingFunction.put(AtomicLong.class, (value) -> new AtomicLong(((Number) value).longValue()));
+        castingFunction.put(BigDecimal.class, (value) -> new BigDecimal(value.toString()));
+        castingFunction.put(BigInteger.class, (value) -> new BigInteger(value.toString()));
+    }
 
     private final Map<Object, JsonNode> serializedInstances = new IdentityHashMap<>();
     private final Map<String, Object> deserializedInstances = new HashMap<>();
@@ -42,8 +79,8 @@ public class JsonSerde {
     private ObjectNode getPreviouslySerializedInstance(Object instance) {
         JsonNode visitedInstance = serializedInstances.get(instance);
         ObjectNode referenceNode = new ObjectNode(JsonNodeFactory.instance);
-        referenceNode.set("type", new TextNode("__ref"));
-        referenceNode.set("value", new TextNode(visitedInstance.get("__idRef").asText()));
+        referenceNode.set("type", new TextNode(REFERENCE_TO_OBJECT));
+        referenceNode.set("value", new TextNode(visitedInstance.get(FIELD_ID).asText()));
         return referenceNode;
     }
 
@@ -56,42 +93,52 @@ public class JsonSerde {
         ObjectNode stateNode = new ObjectNode(JsonNodeFactory.instance);
         rootNode.set("targetClass", new TextNode(instance.getClass().getName()));
         rootNode.set("state", stateNode);
-        rootNode.set("__idRef", new LongNode(fieldIdGenerator.incrementAndGet()));
+        rootNode.set(FIELD_ID, new LongNode(fieldIdGenerator.incrementAndGet()));
         Class<?> instanceClass = instance.getClass();
         if (!wasSerialized(instance)) {
             serializedInstances.put(instance, rootNode);
         }
+        boolean shouldQualifyFieldNames = shouldQualifyFieldNamesFor(instanceClass);
         do {
             for (Field field : instanceClass.getDeclaredFields()) {
                 field.setAccessible(true);
                 int fieldModifiers = field.getModifiers();
-                if (isSynthetic(fieldModifiers) || Modifier.isStatic(fieldModifiers) /*|| Modifier.isTransient(fieldModifiers)*/) {
+                if (Modifier.isStatic(fieldModifiers)) {
                     continue;
                 }
-                if (isCollection(field.getType()) || isPrimitive(field.getType())) {
-                    stateNode.set(field.getName(), serializeValue(field.get(instance)));
+                if (/*isCollection(field.getType()) || */isPrimitive(field.getType())) {
+                    stateNode.set(makeFieldName(field, shouldQualifyFieldNames), serializeValue(field.get(instance)));
                 } else if (field.getType().isArray()) {
-                    stateNode.set(field.getName(), serializeArray(field.get(instance)));
+                    stateNode.set(makeFieldName(field, shouldQualifyFieldNames), serializeArray(field.get(instance)));
                 } else {
-                    serializeObject(instance, stateNode, field);
+                    serializeObject(instance, stateNode, field, shouldQualifyFieldNames);
                 }
             }
         } while ((instanceClass = instanceClass.getSuperclass()) != null);
         return rootNode;
     }
 
-    private void serializeObject(Object instance, ObjectNode stateNode, Field field) throws IllegalAccessException {
+    private String makeFieldName(Field field, boolean shouldQualify) {
+        return shouldQualify ? field.getDeclaringClass().getName() + "." + field.getName() : field.getName();
+    }
+
+    private boolean shouldQualifyFieldNamesFor(Class<?> clazz) {
+        Set<String> fieldNames = new HashSet<>();
+        do {
+            for (Field field : clazz.getDeclaredFields()) {
+                if (!fieldNames.add(field.getName()))
+                    return true;
+            }
+        } while ((clazz = clazz.getSuperclass()) != null);
+        return false;
+    }
+
+    private void serializeObject(Object instance, ObjectNode stateNode, Field field, boolean qualifyFieldNames) throws IllegalAccessException {
         ObjectNode fieldNode = new ObjectNode(JsonNodeFactory.instance);
-        stateNode.set(field.getName(), fieldNode);
+        stateNode.set(makeFieldName(field, qualifyFieldNames), fieldNode);
         Object fieldValue = field.get(instance);
         fieldNode.set("type", new TextNode(fieldValue != null ? fieldValue.getClass().getName() : field.getType().getName()));
         fieldNode.set("value", serializeValue(field.get(instance)));
-    }
-
-    private boolean isSynthetic(int fieldModifiers) throws Exception {
-        Method isSynthetic = Modifier.class.getDeclaredMethod("isSynthetic", int.class);
-        isSynthetic.setAccessible(true);
-        return (boolean) isSynthetic.invoke(null, fieldModifiers);
     }
 
     private JsonNode serializeArray(Object array) {
@@ -102,11 +149,38 @@ public class JsonSerde {
         objectNode.set("type", new TextNode(array.getClass().getName()));
         ArrayNode jsonNodes = new ArrayNode(JsonNodeFactory.instance);
         objectNode.set("value", jsonNodes);
+        Class<?> componentType = array.getClass().getComponentType();
         for (int i = 0; i < Array.getLength(array); ++i) {
             Object currentItem = Array.get(array, i);
-            jsonNodes.add(serializeValue(currentItem));
+            if (isPrimitiveArray(componentType)) {
+                jsonNodes.add(serializeValue(currentItem));
+            } else if (currentItem != null && (!isWrapperOf(currentItem.getClass(), componentType))) {
+                ObjectNode itemNode = new ObjectNode(JsonNodeFactory.instance);
+                itemNode.set("type", new TextNode(currentItem.getClass().getName()));
+                itemNode.set("value", serializeValue(currentItem));
+                jsonNodes.add(itemNode);
+            } else {
+                jsonNodes.add(serializeValue(currentItem));
+            }
         }
         return objectNode;
+    }
+
+    private boolean isPrimitiveArray(Class<?> componentType) {
+        Class<?> currentComponentType = componentType;
+        while (currentComponentType.isArray()) {
+            currentComponentType = currentComponentType.getComponentType();
+        }
+        return isPrimitiveOrWrapper(currentComponentType);
+    }
+
+    private boolean isWrapperOf(Class<?> wrapperType, Class<?> checkedType) {
+        for (Class<?>[] wrapper : WRAPPER_TYPES) {
+            if (wrapperType == wrapper[0] && checkedType == wrapper[1]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isPrimitive(Class<?> type) {
@@ -127,9 +201,9 @@ public class JsonSerde {
             return serializeNumericValue(instance);
         } else if (instance instanceof Boolean) {
             return BooleanNode.valueOf((Boolean) instance);
-        } else if (instance instanceof Collection) {
+        } /*else if (instance instanceof Collection) {
             return serializeCollection((Collection<Object>) instance);
-        } else if (instance.getClass().isEnum()) {
+        }*/ else if (instance.getClass().isEnum()) {
             return new TextNode(instance.toString());
         } else if (instance.getClass().isArray()) {
             return serializeArray(instance);
@@ -182,6 +256,9 @@ public class JsonSerde {
     @SuppressWarnings("unchecked")
     public <T> T deserialize(String json, Class<T> clazz) {
         try {
+            if (isNull(json)) {
+                return null;
+            }
             return tryDeserialize(json);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -190,78 +267,75 @@ public class JsonSerde {
 
     @SuppressWarnings("unchecked")
     private <T> T tryDeserialize(String json) throws Exception {
-        if (json.equals("null")) {
-            return null;
-        }
         JsonNode rootNode = objectMapper.readTree(json);
-        if (rootNode.get("type") != null) {
+        if (rootNode.has("type")) {
             return (T) getValueAs(rootNode.get("value"), rootNode.get("type").asText());
         }
         JsonNode stateNode = rootNode.get("state");
-        String resultingType = rootNode.get("targetClass").asText();
-        String fieldId = rootNode.get("__idRef").asText();
-        Class<?> resultingClass = Class.forName(resultingType);
+        String resultingClassName = rootNode.get("targetClass").asText();
+        String fieldId = rootNode.get(FIELD_ID).asText();
+        Class<?> resultingClass = Class.forName(resultingClassName);
         Object instance = makeInstance(resultingClass);
         deserializedInstances.put(fieldId, instance);
         Iterator<Map.Entry<String, JsonNode>> fields = stateNode.fields();
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> fieldEntry = fields.next();
             JsonNode fieldNode = fieldEntry.getValue();
-            Field field = getDeclaredField(fieldEntry.getKey(), resultingClass);
-            if (field == null) {
-                throw new FieldFieldException("Field " + fieldEntry.getKey() + " was not found present in class " + resultingClass.getName());
-                //continue;
-            }
-            field.setAccessible(true);
-            if (fieldNode.isArray()) {
-                field.set(instance, getCollection((ArrayNode) fieldNode, field.getType()));
-            } else {
-                Object nodeValue = getNodeValue(fieldNode);
-                field.set(instance, castValueTo(nodeValue, field.getType()));
-            }
+            deserializeField(resultingClass, instance, fieldEntry, fieldNode);
         }
         return (T) instance;
     }
 
+    private boolean isNull(String json) {
+        return json == null || json.equals("null");
+    }
+
+    private void deserializeField(Class<?> resultingClass, Object instance, Map.Entry<String, JsonNode> fieldEntry, JsonNode fieldNode) throws Exception {
+        Field field = getDeclaredField(fieldEntry.getKey(), resultingClass);
+        if (field == null) {
+            throw new FieldFieldException("Field " + fieldEntry.getKey() + " was not found present in class " + resultingClass.getName());
+        }
+        field.setAccessible(true);
+        if (fieldNode.isArray()) {
+            field.set(instance, getCollection((ArrayNode) fieldNode, field.getType()));
+        } else {
+            Object nodeValue = getNodeValue(fieldNode);
+            field.set(instance, castValueTo(nodeValue, field.getType()));
+        }
+    }
+
     private Field getDeclaredField(String fieldName, Class<?> clazz) {
         try {
-            if (clazz == null)
-                return null;
-            return clazz.getDeclaredField(fieldName);
-        } catch (NoSuchFieldException e) {
+            return tryGetDeclaredField(fieldName, clazz);
+        } catch (Exception e) {
             return getDeclaredField(fieldName, clazz.getSuperclass());
         }
+    }
+
+    private Field tryGetDeclaredField(String fieldName, Class<?> clazz) throws Exception {
+        if (clazz == null) {
+            return null;
+        } else if (isQualifiedField(fieldName)) {
+            return getQualifiedField(fieldName);
+        }
+        return clazz.getDeclaredField(fieldName);
+    }
+
+    private Field getQualifiedField(String qualifiedFieldName) throws Exception {
+        String className = qualifiedFieldName.substring(0, qualifiedFieldName.lastIndexOf("."));
+        String fieldName = qualifiedFieldName.substring(qualifiedFieldName.lastIndexOf(".") + 1);
+        Class<?> fieldClass = Class.forName(className);
+        return fieldClass.getDeclaredField(fieldName);
+    }
+
+    private boolean isQualifiedField(String fieldName) {
+        return fieldName.contains(".");
     }
 
     private Object castValueTo(Object nodeValue, Class<?> targetType) {
         if (nodeValue == null)
             return null;
-        if (targetType == boolean.class || targetType == Boolean.class) {
-            return (boolean) nodeValue;
-        } else if (targetType == byte.class || targetType == Byte.class) {
-            return ((Number) nodeValue).byteValue();
-        } else if (targetType == char.class || targetType == Character.class) {
-            return (char) (((Number) nodeValue).intValue());
-        } else if (targetType == short.class || targetType == Short.class) {
-            return ((Number) nodeValue).shortValue();
-        } else if (targetType == int.class || targetType == Integer.class) {
-            return ((Number) nodeValue).intValue();
-        } else if (targetType == long.class || targetType == Long.class) {
-            return ((Number) nodeValue).longValue();
-        } else if (targetType == float.class || targetType == Float.class) {
-            return ((Number) nodeValue).floatValue();
-        } else if (targetType == double.class || targetType == Double.class) {
-            return ((Number) nodeValue).doubleValue();
-        } else if (targetType == AtomicInteger.class) {
-            return new AtomicInteger(((Number) nodeValue).intValue());
-        } else if (targetType == AtomicLong.class) {
-            return new AtomicLong(((Number) nodeValue).longValue());
-        } else if (targetType == BigDecimal.class) {
-            return new BigDecimal(nodeValue.toString());
-        } else if (targetType == BigInteger.class) {
-            return new BigInteger(nodeValue.toString());
-        }
-        return nodeValue;
+        return castingFunction.getOrDefault(targetType, (value) -> value).apply(nodeValue);
     }
 
     private Object makeInstance(Class<?> clazz) {
@@ -300,8 +374,10 @@ public class JsonSerde {
     }
 
     private Object getValueAs(JsonNode value, String type) throws Exception {
-        if (type != null) {
-            if (type.equals("__ref")) {
+        if (value == null || value.asText().equals("null")) {
+            return null;
+        } else if (type != null) {
+            if (type.equals(REFERENCE_TO_OBJECT)) {
                 return deserializedInstances.get(value.asText());
             }
             Class<?> resultingClass = Class.forName(type);
@@ -317,6 +393,10 @@ public class JsonSerde {
                 return deserializeArray(resultingClass, (ArrayNode) value);
             } else if (isDate(resultingClass)) {
                 return deserializeDate(resultingClass, value.asText());
+            } else if (isPrimitiveOrWrapper(resultingClass)) {
+                return castValueTo(getNodeValue(value), resultingClass);
+            } else if (value.isNumber()) {
+                return castValueTo(getNodeValue(value), resultingClass);
             }
         }
         if (value.isTextual()) {
@@ -326,6 +406,15 @@ public class JsonSerde {
             return getNodeValue(value);
         }
         return null;
+    }
+
+    private boolean isPrimitiveOrWrapper(Class<?> clazz) {
+        for (Class<?>[] wrapperType : WRAPPER_TYPES) {
+            if (clazz == wrapperType[0] || clazz == wrapperType[1]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Object deserializeDate(Class<?> resultingClass, String value) throws Exception {

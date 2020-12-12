@@ -274,51 +274,43 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithArrayOfObjectsFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithArrayFields() {
         ArrayDummy dummy = new ArrayDummy(new StringDummy[]{new StringDummy("Mike", "Smith"), new StringDummy("Dennis", "Ritchie")});
 
         String actualJson = jsonSerde.serialize(dummy);
 
         String expectedJson = """
                 {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$ArrayDummy",
-                   "__idRef": 1,
-                   "state": {
-                     "strings": {
-                       "type": "[Linc.evil.serde.JsonSerdeTest$StringDummy;",
-                       "value": [
-                         {
-                           "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
-                           "__idRef": 2,
-                           "state": {
-                             "firstName": {
-                               "type": "java.lang.String",
-                               "value": "Mike"
-                             },
-                             "lastName": {
-                               "type": "java.lang.String",
-                               "value": "Smith"
-                             }
-                           }
-                         },
-                         {
-                           "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
-                           "__idRef": 3,
-                           "state": {
-                             "firstName": {
-                               "type": "java.lang.String",
-                               "value": "Dennis"
-                             },
-                             "lastName": {
-                               "type": "java.lang.String",
-                               "value": "Ritchie"
-                             }
-                           }
-                         }
-                       ]
-                     }
-                   }
-                 }""";
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$ArrayDummy",
+                  "state": {
+                    "strings": {
+                      "type": "[Linc.evil.serde.JsonSerdeTest$StringDummy;",
+                      "value": [
+                        {
+                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "value": {
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "state": {
+                              "firstName": {"type": "java.lang.String", "value": "Mike"},
+                              "lastName": {"type": "java.lang.String", "value": "Smith"}},
+                            "__idRef": 2
+                          }
+                        },
+                        {
+                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "value": {
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "state": {
+                              "firstName": {"type": "java.lang.String", "value": "Dennis"},
+                              "lastName": {"type": "java.lang.String", "value": "Ritchie"}},
+                            "__idRef": 3
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "__idRef": 1
+                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
@@ -326,44 +318,36 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserializeToJson_objectWithArrayOfObjectsFields() {
         String json = """
                 {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$ArrayDummy",
-                   "__idRef": 1,
-                   "state": {
-                     "strings": {
-                       "type": "[Linc.evil.serde.JsonSerdeTest$StringDummy;",
-                       "value": [
-                         {
-                           "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
-                           "__idRef": 2,
-                           "state": {
-                             "firstName": {
-                               "type": "java.lang.String",
-                               "value": "Mike"
-                             },
-                             "lastName": {
-                               "type": "java.lang.String",
-                               "value": "Smith"
-                             }
-                           }
-                         },
-                         {
-                           "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
-                           "__idRef": 3,
-                           "state": {
-                             "firstName": {
-                               "type": "java.lang.String",
-                               "value": "Dennis"
-                             },
-                             "lastName": {
-                               "type": "java.lang.String",
-                               "value": "Ritchie"
-                             }
-                           }
-                         }
-                       ]
-                     }
-                   }
-                 }""";
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$ArrayDummy",
+                  "state": {
+                    "strings": {
+                      "type": "[Linc.evil.serde.JsonSerdeTest$StringDummy;",
+                      "value": [
+                        {
+                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "value": {
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "state": {
+                              "firstName": {"type": "java.lang.String", "value": "Mike"},
+                              "lastName": {"type": "java.lang.String", "value": "Smith"}},
+                            "__idRef": 2
+                          }
+                        },
+                        {
+                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "value": {
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "state": {
+                              "firstName": {"type": "java.lang.String", "value": "Dennis"},
+                              "lastName": {"type": "java.lang.String", "value": "Ritchie"}},
+                            "__idRef": 3
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "__idRef": 1
+                }""";
 
         ArrayDummy actualObject = jsonSerde.deserialize(json, ArrayDummy.class);
 
@@ -545,29 +529,29 @@ public class JsonSerdeTest {
 
         String expectedJson = """
                 {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$EnumDummy",
-                   "state": {
-                     "season": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": "SPRING"},
-                     "name": {"type": "java.lang.String", "value": "Mike"},
-                     "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": null}
-                   },
-                   "__idRef": 1
-                 }""";
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$EnumDummy",
+                  "state": {
+                    "season": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": "SPRING"},
+                    "name": {"type": "java.lang.String", "value": "Mike"},
+                    "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": null}
+                  },
+                  "__idRef": 1
+                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
     public void shouldBeAbleToDeserializeToJson_objectWithEnumFields() {
         String json = """
-                 {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$EnumDummy",
-                   "state": {
-                     "season": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": "SPRING"},
-                     "name": {"type": "java.lang.String", "value": "Mike"},
-                     "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": null}
-                   },
-                   "__idRef": 1
-                 }""";
+                {
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$EnumDummy",
+                  "state": {
+                    "season": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": "SPRING"},
+                    "name": {"type": "java.lang.String", "value": "Mike"},
+                    "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": null}
+                  },
+                  "__idRef": 1
+                }""";
 
         EnumDummy actualDeserializedInstance = jsonSerde.deserialize(json, EnumDummy.class);
 
@@ -583,12 +567,22 @@ public class JsonSerdeTest {
 
         String expectedJson = """
                 {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$ListDummy",
-                  "state" : {
-                    "values" : [ "Funky", "shit" ]
-                  },
-                  "__idRef": 1
-                }""";
+                   "targetClass": "inc.evil.serde.JsonSerdeTest$ListDummy",
+                   "state": {
+                     "values": {
+                       "type": "java.util.ImmutableCollections$List12",
+                       "value": {
+                         "targetClass": "java.util.ImmutableCollections$List12",
+                         "state": {
+                           "e0": {"type": "java.lang.String", "value": "Funky"},
+                           "e1": {"type": "java.lang.String", "value": "shit"}
+                         },
+                         "__idRef": 2
+                       }
+                     }
+                   },
+                   "__idRef": 1
+                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
@@ -666,12 +660,22 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserializeToJson_objectWithListFields() {
         String json = """
                 {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$ListDummy",
-                  "state" : {
-                    "values" : [ "Funky", "shit" ]
-                  },
-                  "__idRef": 1
-                }""";
+                   "targetClass": "inc.evil.serde.JsonSerdeTest$ListDummy",
+                   "state": {
+                     "values": {
+                       "type": "java.util.ImmutableCollections$List12",
+                       "value": {
+                         "targetClass": "java.util.ImmutableCollections$List12",
+                         "state": {
+                           "e0": {"type": "java.lang.String", "value": "Funky"},
+                           "e1": {"type": "java.lang.String", "value": "shit"}
+                         },
+                         "__idRef": 2
+                       }
+                     }
+                   },
+                   "__idRef": 1
+                 }""";
 
         ListDummy actualDummy = jsonSerde.deserialize(json, ListDummy.class);
 
@@ -1061,12 +1065,12 @@ public class JsonSerdeTest {
 
         String expectedJson = """
                 {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$NullInterfaceFields",
-                   "state": {
-                     "strings": null
-                   },
-                   "__idRef": 1
-                 }""";
+                    "targetClass": "inc.evil.serde.JsonSerdeTest$NullInterfaceFields",
+                    "state": {
+                      "strings": {"type": "java.util.List", "value": null}
+                    },
+                    "__idRef": 1
+                  }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
@@ -1074,16 +1078,246 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserializeToJson_objectWithNullInterfaceFields() {
         String json = """
                 {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$NullInterfaceFields",
-                   "state": {
-                     "strings": null
-                   },
-                   "__idRef": 1
-                 }""";
+                    "targetClass": "inc.evil.serde.JsonSerdeTest$NullInterfaceFields",
+                    "state": {
+                      "strings": {"type": "java.util.List", "value": null}
+                    },
+                    "__idRef": 1
+                  }""";
 
         NullInterfaceFields actualInstance = jsonSerde.deserialize(json, NullInterfaceFields.class);
 
         NullInterfaceFields expectedInstance = new NullInterfaceFields(null);
+        assertEquals(expectedInstance, actualInstance);
+    }
+
+    @Test
+    public void shouldBeAbleToSerializeToJson_objectWithNullFieldsOfTypeClass() {
+        NullClassFields nullClassFields = new NullClassFields(null, "Mike");
+
+        String actualJson = jsonSerde.serialize(nullClassFields);
+
+        String expectedJson = """
+                {
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$NullClassFields",
+                  "state": {
+                    "targetClass": {"type": "java.lang.Class", "value": null},
+                    "name": {"type": "java.lang.String", "value": "Mike"}
+                  },
+                  "__idRef": 1
+                }""";
+        assertJsonEquals(expectedJson, actualJson);
+    }
+
+    @Test
+    public void shouldBeAbleToDeserializeToJson_objectWithNullFieldsOfTypeClass() {
+        String json = """
+                {
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$NullClassFields",
+                  "state": {
+                    "targetClass": {"type": "java.lang.Class", "value": null},
+                    "name": {"type": "java.lang.String", "value": "Mike"}
+                  },
+                  "__idRef": 1
+                }""";
+
+        NullClassFields actualInstance = jsonSerde.deserialize(json, NullClassFields.class);
+
+        NullClassFields expectedInstance = new NullClassFields(null, "Mike");
+        assertEquals(expectedInstance, actualInstance);
+    }
+
+    @Test
+    public void shouldBeAbleToSerializeToJson_objectsWithObjectArraysFields() {
+        ObjectArrays objectArrays = new ObjectArrays(
+                new Object[]{
+                        Override.class, "Mike", 42, new StringDummy("John", "Doe")
+                }
+        );
+
+        String actualJson = jsonSerde.serialize(objectArrays);
+
+        String expectedJson = """
+                {
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$ObjectArrays",
+                  "state": {
+                    "objects": {
+                      "type": "[Ljava.lang.Object;",
+                      "value": [
+                        {"type": "java.lang.Class", "value": "java.lang.Override"},
+                        {"type": "java.lang.String", "value": "Mike"},
+                        {"type": "java.lang.Integer", "value": 42},
+                        {
+                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "value": {
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "state": {
+                              "firstName": {"type": "java.lang.String", "value": "John"},
+                              "lastName": {"type": "java.lang.String", "value": "Doe"}
+                            },
+                            "__idRef": 2
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "__idRef": 1
+                }""";
+        assertJsonEquals(expectedJson, actualJson);
+    }
+
+    @Test
+    public void shouldBeAbleToDeserializeToJson_objectsWithObjectArraysFields() {
+        String json = """
+                {
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$ObjectArrays",
+                  "state": {
+                    "objects": {
+                      "type": "[Ljava.lang.Object;",
+                      "value": [
+                        {"type": "java.lang.Class", "value": "java.lang.Override"},
+                        {"type": "java.lang.String", "value": "Mike"},
+                        {"type": "java.lang.Integer", "value": 42},
+                        {
+                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "value": {
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "state": {
+                              "firstName": {"type": "java.lang.String", "value": "John"},
+                              "lastName": {"type": "java.lang.String", "value": "Doe"}
+                            },
+                            "__idRef": 2
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "__idRef": 1
+                }""";
+
+        ObjectArrays actualInstance = jsonSerde.deserialize(json, ObjectArrays.class);
+
+        ObjectArrays expectedInstance = new ObjectArrays(
+                new Object[]{
+                        Override.class, "Mike", 42, new StringDummy("John", "Doe")
+                }
+        );
+        assertEquals(expectedInstance, actualInstance);
+    }
+
+    @Test
+    public void shouldBeAbleToSerializeToJson_objectsWithClashingFieldNames() {
+        ClashingFieldNames clashingFieldNames = new ClashingFieldNames("John", new StringDummy("Mike", "Smith"));
+
+        String actualJson = jsonSerde.serialize(clashingFieldNames);
+
+        String expectedJson = """
+                {
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$ClashingFieldNames",
+                  "state": {
+                    "inc.evil.serde.JsonSerdeTest$ClashingFieldNames.name": {
+                      "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                      "value": {
+                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                        "state": {
+                          "firstName": {"type": "java.lang.String", "value": "Mike"},
+                          "lastName": {"type": "java.lang.String", "value": "Smith"}},
+                        "__idRef": 2
+                      }
+                    },
+                    "inc.evil.serde.JsonSerdeTest$Named.name": {"type": "java.lang.String", "value": "John"}
+                  },
+                  "__idRef": 1
+                }""";
+        assertJsonEquals(expectedJson, actualJson);
+    }
+
+    @Test
+    public void shouldBeAbleToDeserializeToJson_objectsWithClashingFieldNames() {
+        String json = """
+                {
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$ClashingFieldNames",
+                  "state": {
+                    "inc.evil.serde.JsonSerdeTest$ClashingFieldNames.name": {
+                      "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                      "value": {
+                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                        "state": {
+                          "firstName": {"type": "java.lang.String", "value": "Mike"},
+                          "lastName": {"type": "java.lang.String", "value": "Smith"}},
+                        "__idRef": 2
+                      }
+                    },
+                    "inc.evil.serde.JsonSerdeTest$Named.name": {"type": "java.lang.String", "value": "John"}
+                  },
+                  "__idRef": 1
+                }""";
+
+        ClashingFieldNames actualInstance = jsonSerde.deserialize(json, ClashingFieldNames.class);
+
+        ClashingFieldNames expectedInstance = new ClashingFieldNames("John", new StringDummy("Mike", "Smith"));
+        assertEquals(expectedInstance, actualInstance);
+    }
+
+    @Test
+    public void shouldBeAbleToSerializeToJson_genericObject() {
+        Node<String, Integer> node = new Node<>(222, "Mike", 42, new Node<>(333, "Dennis", 45));
+
+        String actualJson = jsonSerde.serialize(node);
+
+        String expectedJson = """
+                {
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$Node",
+                  "state": {"hash": 222, "key": {"type": "java.lang.String", "value": "Mike"},
+                    "val": {"type": "java.lang.Integer", "value": 42},
+                    "next": {
+                      "type": "inc.evil.serde.JsonSerdeTest$Node",
+                      "value": {
+                        "targetClass": "inc.evil.serde.JsonSerdeTest$Node",
+                        "state": {
+                          "hash": 333,
+                          "key": {"type": "java.lang.String", "value": "Dennis"},
+                          "val": {"type": "java.lang.Integer", "value": 45},
+                          "next": {"type": "inc.evil.serde.JsonSerdeTest$Node", "value": null}
+                        },
+                        "__idRef": 2
+                      }
+                    }
+                  },
+                  "__idRef": 1
+                }
+                """;
+        assertJsonEquals(expectedJson, actualJson);
+    }
+
+    @Test
+    public void shouldBeAbleToDeserializeToJson_genericObject() {
+        String json = """
+                {
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$Node",
+                  "state": {"hash": 222, "key": {"type": "java.lang.String", "value": "Mike"},
+                    "val": {"type": "java.lang.Integer", "value": 42},
+                    "next": {
+                      "type": "inc.evil.serde.JsonSerdeTest$Node",
+                      "value": {
+                        "targetClass": "inc.evil.serde.JsonSerdeTest$Node",
+                        "state": {
+                          "hash": 333,
+                          "key": {"type": "java.lang.String", "value": "Dennis"},
+                          "val": {"type": "java.lang.Integer", "value": 45},
+                          "next": {"type": "inc.evil.serde.JsonSerdeTest$Node", "value": null}
+                        },
+                        "__idRef": 2
+                      }
+                    }
+                  },
+                  "__idRef": 1
+                }
+                """;
+
+        Node<String, Integer> actualInstance = jsonSerde.deserialize(json, Node.class);
+
+        Node<String, Integer> expectedInstance = new Node<>(222, "Mike", 42, new Node<>(333, "Dennis", 45));
         assertEquals(expectedInstance, actualInstance);
     }
 
@@ -1092,6 +1326,97 @@ public class JsonSerdeTest {
             assertEquals(objectMapper.readTree(expectedJson), objectMapper.readTree(actualJson));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static class Node<K,V> {
+        final int hash;
+        final K key;
+        volatile V val;
+        volatile Node<K, V> next;
+
+        Node(int hash, K key, V val) {
+            this.hash = hash;
+            this.key = key;
+            this.val = val;
+        }
+
+        Node(int hash, K key, V val, Node<K, V> next) {
+            this(hash, key, val);
+            this.next = next;
+        }
+
+        public final int hashCode() { return key.hashCode() ^ val.hashCode(); }
+
+        public final boolean equals(Object o) {
+            Object k, v, u; Node<?,?> e;
+            return ((o instanceof Node) &&
+                    (k = (e = (Node<?,?>)o).key) != null &&
+                    (v = e.val) != null &&
+                    (k == key || k.equals(key)) &&
+                    (v == (u = val) || v.equals(u)));
+        }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "hash=" + hash +
+                    ", key=" + key +
+                    ", val=" + val +
+                    ", next=" + next +
+                    '}';
+        }
+    }
+
+    public static class NullClassFields {
+        private final Class<?> targetClass;
+        private final String name;
+
+        public NullClassFields(Class<?> targetClass, String name) {
+            this.targetClass = targetClass;
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            NullClassFields that = (NullClassFields) o;
+
+            if (targetClass != null ? !targetClass.equals(that.targetClass) : that.targetClass != null) return false;
+            return name != null ? name.equals(that.name) : that.name == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = targetClass != null ? targetClass.hashCode() : 0;
+            result = 31 * result + (name != null ? name.hashCode() : 0);
+            return result;
+        }
+    }
+
+    public static class ObjectArrays {
+        private final Object[] objects;
+
+        public ObjectArrays(Object[] objects) {
+            this.objects = objects;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ObjectArrays that = (ObjectArrays) o;
+
+            // Probably incorrect - comparing Object[] arrays with Arrays.equals
+            return Arrays.equals(objects, that.objects);
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(objects);
         }
     }
 
@@ -1254,6 +1579,30 @@ public class JsonSerdeTest {
                     "atomicInteger=" + atomicInteger +
                     ", atomicLong=" + atomicLong +
                     '}';
+        }
+    }
+
+    public static class ClashingFieldNames extends Named {
+        private final StringDummy name;
+
+        public ClashingFieldNames(String name, StringDummy name1) {
+            super(name);
+            this.name = name1;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ClashingFieldNames that = (ClashingFieldNames) o;
+
+            return name != null ? name.equals(that.name) : that.name == null;
+        }
+
+        @Override
+        public int hashCode() {
+            return name != null ? name.hashCode() : 0;
         }
     }
 
