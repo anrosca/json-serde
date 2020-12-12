@@ -1,4 +1,4 @@
-## JSON SERDE (SerializerDeserializer) [![Build Status](https://travis-ci.com/anrosca/di-machine.svg?branch=master)](https://travis-ci.com/github/anrosca/di-machine)
+## JSON SERDE (SerializerDeserializer) [![Build Status](https://travis-ci.com/anrosca/json-serde.svg?branch=master)](https://travis-ci.com/github/anrosca/json-serde)
 
 A lightweight JSON serialization & deserialization library. It's a thin wrapper around Jackson. 
 A small inconvenience of Jackson is that the DTO which is serialized/deserialized to/from JSON either has
