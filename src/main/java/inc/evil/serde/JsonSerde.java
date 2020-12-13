@@ -444,9 +444,14 @@ class JsonSerde {
         for (int i = 0; i < length; ++i) {
             JsonNode currentNode = arrayNode.get(i);
             Object value = currentNode.isObject() ? deserialize(currentNode.toString(), componentType) : getNodeValue(currentNode);
-            Array.set(resultingArray, i, componentType.isPrimitive() ? castValueTo(value, componentType) : value);
+            Array.set(resultingArray, i, shouldCastArrayElement(componentType, value) ? castValueTo(value, componentType) : value);
         }
         return resultingArray;
+    }
+
+    private boolean shouldCastArrayElement(Class<?> componentType, Object value) {
+        return componentType.isPrimitive() || (value != null && isWrapperOf(value.getClass(), componentType)) ||
+               (value != null && componentType != value.getClass());
     }
 
     private Enum<?> getEnumValue(Class<?> enumClass, String enumValue) throws Exception {
