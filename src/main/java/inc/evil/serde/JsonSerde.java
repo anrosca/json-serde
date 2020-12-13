@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 class JsonSerde {
     private static final String REFERENCE_TO_OBJECT = "__ref";
-    private static final String FIELD_ID = "__idRef";
+    private static final String FIELD_ID = "__id";
     private static final Class<?>[][] WRAPPER_TYPES = {
             {Boolean.class, boolean.class},
             {Byte.class, byte.class},

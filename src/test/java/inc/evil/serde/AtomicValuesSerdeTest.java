@@ -33,7 +33,7 @@ public class AtomicValuesSerdeTest {
                     "atomicLong" : {"type" : "java.util.concurrent.atomic.AtomicLong", "value" : 66},
                     "atomicBoolean": {"type": "java.util.concurrent.atomic.AtomicBoolean", "value": true}
                   },
-                  "__idRef" : 1
+                  "__id" : 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -48,7 +48,7 @@ public class AtomicValuesSerdeTest {
                     "atomicLong" : {"type" : "java.util.concurrent.atomic.AtomicLong", "value" : 66},
                     "atomicBoolean": {"type": "java.util.concurrent.atomic.AtomicBoolean", "value": true}
                   },
-                  "__idRef" : 1
+                  "__id" : 1
                 }""";
 
         AtomicNumbers actualInstance = jsonMapper.deserialize(json, AtomicNumbers.class);
@@ -77,7 +77,7 @@ public class AtomicValuesSerdeTest {
                 "atomicLong": {"type": "java.util.concurrent.atomic.AtomicLong", "value": null},
                 "atomicBoolean": {"type": "java.util.concurrent.atomic.AtomicBoolean", "value": null}
               },
-              "__idRef": 1
+              "__id": 1
             }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -92,7 +92,7 @@ public class AtomicValuesSerdeTest {
                 "atomicLong": {"type": "java.util.concurrent.atomic.AtomicLong", "value": null},
                 "atomicBoolean": {"type": "java.util.concurrent.atomic.AtomicBoolean", "value": null}
               },
-              "__idRef": 1
+              "__id": 1
             }""";
 
         AtomicNumbers actualInstance = jsonMapper.deserialize(json, AtomicNumbers.class);

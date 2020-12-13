@@ -40,7 +40,7 @@ public class ArraysOfPrimitiveWrappersSerdeTest {
                 "floatArray": {"type": "[Ljava.lang.Float;", "value": [0.5, 1.5]},
                 "doubleArray": {"type": "[Ljava.lang.Double;", "value": [1.55, 3.14]}
               },
-              "__idRef": 1
+              "__id": 1
             }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -60,7 +60,7 @@ public class ArraysOfPrimitiveWrappersSerdeTest {
                 "floatArray": {"type": "[Ljava.lang.Float;", "value": [0.5, 1.5]},
                 "doubleArray": {"type": "[Ljava.lang.Double;", "value": [1.55, 3.14]}
               },
-              "__idRef": 1
+              "__id": 1
             }""";
 
         ArraysOfPrimitiveWrappers actualInstance = jsonMapper.deserialize(json, ArraysOfPrimitiveWrappers.class);
@@ -106,7 +106,7 @@ public class ArraysOfPrimitiveWrappersSerdeTest {
                 "floatArray": null,
                 "doubleArray": null
               },
-              "__idRef": 1
+              "__id": 1
             }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -126,7 +126,7 @@ public class ArraysOfPrimitiveWrappersSerdeTest {
                 "floatArray": null,
                 "doubleArray": null
               },
-              "__idRef": 1
+              "__id": 1
             }""";
 
         ArraysOfPrimitiveWrappers actualInstance = jsonMapper.deserialize(json, ArraysOfPrimitiveWrappers.class);

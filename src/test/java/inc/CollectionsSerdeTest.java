@@ -38,12 +38,12 @@ public class CollectionsSerdeTest {
                           "state": {
                             "name": {"type": "java.lang.String", "value": "Mike"}
                           },
-                          "__idRef": 2
+                          "__id": 2
                         }
                       ]
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -62,12 +62,12 @@ public class CollectionsSerdeTest {
                           "state": {
                             "name": {"type": "java.lang.String", "value": "Mike"}
                           },
-                          "__idRef": 2
+                          "__id": 2
                         }
                       ]
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         ArrayListFields actualInstance = jsonMapper.deserialize(json, ArrayListFields.class);
@@ -90,7 +90,7 @@ public class CollectionsSerdeTest {
                   "state": {
                     "strings": {"type": "java.util.ArrayList", "value": []}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -103,7 +103,7 @@ public class CollectionsSerdeTest {
                   "state": {
                     "strings": {"type": "java.util.ArrayList", "value": []}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         ArrayListFields actualInstance = jsonMapper.deserialize(json, ArrayListFields.class);
@@ -132,12 +132,12 @@ public class CollectionsSerdeTest {
                           "state": {
                             "name": {"type": "java.lang.String", "value": "Mike"}
                           },
-                          "__idRef": 2
+                          "__id": 2
                         }
                       ]
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -156,12 +156,12 @@ public class CollectionsSerdeTest {
                           "state": {
                             "name": {"type": "java.lang.String", "value": "Mike"}
                           },
-                          "__idRef": 2
+                          "__id": 2
                         }
                       ]
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         HashSetFields actualInstance = jsonMapper.deserialize(json, HashSetFields.class);

@@ -34,7 +34,7 @@ public class JsonSerdeTest {
                   "state": {
                     "targetClass": {"type": "java.lang.Class", "value": "java.util.ArrayList"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -47,7 +47,7 @@ public class JsonSerdeTest {
                   "state": {
                     "targetClass": {"type": "java.lang.Class", "value": "java.util.ArrayList"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         ClassLiteral actualInstance = jsonSerde.deserialize(json, ClassLiteral.class);
@@ -71,7 +71,7 @@ public class JsonSerdeTest {
                       "value" : "Smith"
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         FinalFields actualInstance = jsonSerde.deserialize(json, FinalFields.class);
@@ -106,7 +106,7 @@ public class JsonSerdeTest {
                       ]
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -127,7 +127,7 @@ public class JsonSerdeTest {
                       ]
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         MultidimensionalArrays actualInstance = jsonSerde.deserialize(json, MultidimensionalArrays.class);
@@ -153,7 +153,7 @@ public class JsonSerdeTest {
                 {
                   "targetClass" : "inc.evil.serde.JsonSerdeTest$NoFields",
                   "state" : { },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -164,7 +164,7 @@ public class JsonSerdeTest {
                 {
                   "targetClass" : "inc.evil.serde.JsonSerdeTest$NoFields",
                   "state" : { },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         NoFields actualInstance = jsonSerde.deserialize(json, NoFields.class);
@@ -200,7 +200,7 @@ public class JsonSerdeTest {
                     "floatArray":   {"type": "[F", "value": [6.5]},
                     "doubleArray":  {"type": "[D","value": [7.5]}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -220,7 +220,7 @@ public class JsonSerdeTest {
                     "floatArray":   {"type": "[F", "value": [6.5]},
                     "doubleArray":  {"type": "[D","value": [7.5]}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         PrimitiveArrays actualInstance = jsonSerde.deserialize(json, PrimitiveArrays.class);
@@ -270,7 +270,7 @@ public class JsonSerdeTest {
                       "value" : "Smith"
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -295,7 +295,7 @@ public class JsonSerdeTest {
                             "state": {
                               "firstName": {"type": "java.lang.String", "value": "Mike"},
                               "lastName": {"type": "java.lang.String", "value": "Smith"}},
-                            "__idRef": 2
+                            "__id": 2
                           }
                         },
                         {
@@ -305,13 +305,13 @@ public class JsonSerdeTest {
                             "state": {
                               "firstName": {"type": "java.lang.String", "value": "Dennis"},
                               "lastName": {"type": "java.lang.String", "value": "Ritchie"}},
-                            "__idRef": 3
+                            "__id": 3
                           }
                         }
                       ]
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -332,7 +332,7 @@ public class JsonSerdeTest {
                             "state": {
                               "firstName": {"type": "java.lang.String", "value": "Mike"},
                               "lastName": {"type": "java.lang.String", "value": "Smith"}},
-                            "__idRef": 2
+                            "__id": 2
                           }
                         },
                         {
@@ -342,13 +342,13 @@ public class JsonSerdeTest {
                             "state": {
                               "firstName": {"type": "java.lang.String", "value": "Dennis"},
                               "lastName": {"type": "java.lang.String", "value": "Ritchie"}},
-                            "__idRef": 3
+                            "__id": 3
                           }
                         }
                       ]
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         PojoArrays actualObject = jsonSerde.deserialize(json, PojoArrays.class);
@@ -385,7 +385,7 @@ public class JsonSerdeTest {
                     "floatField" : 6.5,
                     "doubleField" : 7.5
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -405,7 +405,7 @@ public class JsonSerdeTest {
                     "floatField" : 6.5,
                     "doubleField" : 7.5
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         PrimitivesTypes actualObject = jsonSerde.deserialize(json, PrimitivesTypes.class);
@@ -430,7 +430,7 @@ public class JsonSerdeTest {
                     },
                     "age" : 666
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -446,7 +446,7 @@ public class JsonSerdeTest {
                       "value" : "Mike"
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         IgnoreStaticFields actualObject = jsonSerde.deserialize(json, IgnoreStaticFields.class);
@@ -464,13 +464,13 @@ public class JsonSerdeTest {
         String expectedJson = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$PojoFields",
-                  "__idRef": 1,
+                  "__id": 1,
                   "state": {
                     "user": {
                       "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                       "value": {
                         "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                        "__idRef": 2,
+                        "__id": 2,
                         "state": {
                           "firstName": {
                             "type": "java.lang.String",
@@ -494,13 +494,13 @@ public class JsonSerdeTest {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$PojoFields",
-                  "__idRef": 1,
+                  "__id": 1,
                   "state": {
                     "user": {
                       "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                       "value": {
                         "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                        "__idRef": 2,
+                        "__id": 2,
                         "state": {
                           "firstName": {
                             "type": "java.lang.String",
@@ -537,7 +537,7 @@ public class JsonSerdeTest {
                     "name": {"type": "java.lang.String", "value": "Mike"},
                     "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": null}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -552,7 +552,7 @@ public class JsonSerdeTest {
                     "name": {"type": "java.lang.String", "value": "Mike"},
                     "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": null}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         EnumFieldValues actualDeserializedInstance = jsonSerde.deserialize(json, EnumFieldValues.class);
@@ -579,11 +579,11 @@ public class JsonSerdeTest {
                            "e0": {"type": "java.lang.String", "value": "Funky"},
                            "e1": {"type": "java.lang.String", "value": "shit"}
                          },
-                         "__idRef": 2
+                         "__id": 2
                        }
                      }
                    },
-                   "__idRef": 1
+                   "__id": 1
                  }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -605,12 +605,12 @@ public class JsonSerdeTest {
                            },
                            "name": {"type": "java.lang.String", "value": "Mike"}
                          },
-                         "__idRef": 2
+                         "__id": 2
                        }
                      },
                      "age": 42
                    },
-                   "__idRef": 1
+                   "__id": 1
                  }""";
 
         CircularInstance1 actualInstance = jsonSerde.deserialize(json, CircularInstance1.class);
@@ -648,12 +648,12 @@ public class JsonSerdeTest {
                            },
                            "name": {"type": "java.lang.String", "value": "Mike"}
                          },
-                         "__idRef": 2
+                         "__id": 2
                        }
                      },
                      "age": 42
                    },
-                   "__idRef": 1
+                   "__id": 1
                  }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -672,11 +672,11 @@ public class JsonSerdeTest {
                            "e0": {"type": "java.lang.String", "value": "Funky"},
                            "e1": {"type": "java.lang.String", "value": "shit"}
                          },
-                         "__idRef": 2
+                         "__id": 2
                        }
                      }
                    },
-                   "__idRef": 1
+                   "__id": 1
                  }""";
 
         ListOfStrings actualDummy = jsonSerde.deserialize(json, ListOfStrings.class);
@@ -700,7 +700,7 @@ public class JsonSerdeTest {
                       "value" : "Smith"
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         StringFields actualDeserializedInstance = jsonSerde.deserialize(json, StringFields.class);
@@ -721,7 +721,7 @@ public class JsonSerdeTest {
                     "age": 29,
                     "name": {"type": "java.lang.String", "value": "Mike"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -735,7 +735,7 @@ public class JsonSerdeTest {
                     "age": 29,
                     "name": {"type": "java.lang.String", "value": "Mike"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         InheritedFields actualInstance = jsonSerde.deserialize(json, InheritedFields.class);
@@ -757,7 +757,7 @@ public class JsonSerdeTest {
                     "source": {"type": "java.lang.Class", "value": "java.lang.String"},
                     "name": {"type": "java.lang.String", "value": "John"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -771,7 +771,7 @@ public class JsonSerdeTest {
                     "source": {"type": "java.lang.Class", "value": "java.lang.String"},
                     "name": {"type": "java.lang.String", "value": "John"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         UpcastToObject actualInstance = jsonSerde.deserialize(json, UpcastToObject.class);
@@ -799,7 +799,7 @@ public class JsonSerdeTest {
                     "offsetDateTime": {"type": "java.time.OffsetDateTime", "value": "2021-05-02T14:40:50.000000003Z"},
                     "zonedDateTime": {"type": "java.time.ZonedDateTime", "value": "2020-11-23T13:14:45+01:00[Europe/Paris]"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -815,7 +815,7 @@ public class JsonSerdeTest {
                     "offsetDateTime": {"type": "java.time.OffsetDateTime", "value": "2021-05-02T14:40:50.000000003Z"},
                     "zonedDateTime": {"type": "java.time.ZonedDateTime", "value": "2020-11-23T13:14:45+01:00[Europe/Paris]"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         Dates actualInstance = jsonSerde.deserialize(json, Dates.class);
@@ -837,7 +837,7 @@ public class JsonSerdeTest {
                     "age": 11123456789,
                     "id": null
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         NullWrappers actualInstance = jsonSerde.deserialize(json, NullWrappers.class);
@@ -860,7 +860,7 @@ public class JsonSerdeTest {
                     "localDateTime": {"type": "java.time.LocalDateTime", "value": null},
                     "offsetDateTime": {"type": "java.time.OffsetDateTime", "value": null}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -875,7 +875,7 @@ public class JsonSerdeTest {
                     "localDateTime": {"type": "java.time.LocalDateTime", "value": null},
                     "offsetDateTime": {"type": "java.time.OffsetDateTime", "value": null}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         NullDates actualInstance = jsonSerde.deserialize(json, NullDates.class);
@@ -899,7 +899,7 @@ public class JsonSerdeTest {
                       "value": "123445678990766"
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         BigNumbers actualInstance = jsonSerde.deserialize(json, BigNumbers.class);
@@ -933,7 +933,7 @@ public class JsonSerdeTest {
                       "value": "123445678990766"
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -954,7 +954,7 @@ public class JsonSerdeTest {
                     "period": {"type": "java.time.Period", "value": "P1D"},
                     "duration": {"type": "java.time.Duration", "value": "PT2M"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -968,7 +968,7 @@ public class JsonSerdeTest {
                     "period": {"type": "java.time.Period", "value": "P1D"},
                     "duration": {"type": "java.time.Duration", "value": "PT2M"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         PeriodsAndDurations actualInstance = jsonSerde.deserialize(json, PeriodsAndDurations.class);
@@ -993,7 +993,7 @@ public class JsonSerdeTest {
                     "bytes": null,
                     "strings": null
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -1007,7 +1007,7 @@ public class JsonSerdeTest {
                     "bytes": null,
                     "strings": null
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         NullArrays actualInstance = jsonSerde.deserialize(json, NullArrays.class);
@@ -1028,7 +1028,7 @@ public class JsonSerdeTest {
                     "state": {
                       "strings": {"type": "java.util.List", "value": null}
                     },
-                    "__idRef": 1
+                    "__id": 1
                   }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -1041,7 +1041,7 @@ public class JsonSerdeTest {
                     "state": {
                       "strings": {"type": "java.util.List", "value": null}
                     },
-                    "__idRef": 1
+                    "__id": 1
                   }""";
 
         NullInterfaceFields actualInstance = jsonSerde.deserialize(json, NullInterfaceFields.class);
@@ -1063,7 +1063,7 @@ public class JsonSerdeTest {
                     "targetClass": {"type": "java.lang.Class", "value": null},
                     "name": {"type": "java.lang.String", "value": "Mike"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -1077,7 +1077,7 @@ public class JsonSerdeTest {
                     "targetClass": {"type": "java.lang.Class", "value": null},
                     "name": {"type": "java.lang.String", "value": "Mike"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         NullClassFields actualInstance = jsonSerde.deserialize(json, NullClassFields.class);
@@ -1114,13 +1114,13 @@ public class JsonSerdeTest {
                               "firstName": {"type": "java.lang.String", "value": "John"},
                               "lastName": {"type": "java.lang.String", "value": "Doe"}
                             },
-                            "__idRef": 2
+                            "__id": 2
                           }
                         }
                       ]
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -1145,13 +1145,13 @@ public class JsonSerdeTest {
                               "firstName": {"type": "java.lang.String", "value": "John"},
                               "lastName": {"type": "java.lang.String", "value": "Doe"}
                             },
-                            "__idRef": 2
+                            "__id": 2
                           }
                         }
                       ]
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         ObjectArrays actualInstance = jsonSerde.deserialize(json, ObjectArrays.class);
@@ -1181,12 +1181,12 @@ public class JsonSerdeTest {
                         "state": {
                           "firstName": {"type": "java.lang.String", "value": "Mike"},
                           "lastName": {"type": "java.lang.String", "value": "Smith"}},
-                        "__idRef": 2
+                        "__id": 2
                       }
                     },
                     "inc.evil.serde.JsonSerdeTest$Named.name": {"type": "java.lang.String", "value": "John"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
@@ -1204,12 +1204,12 @@ public class JsonSerdeTest {
                         "state": {
                           "firstName": {"type": "java.lang.String", "value": "Mike"},
                           "lastName": {"type": "java.lang.String", "value": "Smith"}},
-                        "__idRef": 2
+                        "__id": 2
                       }
                     },
                     "inc.evil.serde.JsonSerdeTest$Named.name": {"type": "java.lang.String", "value": "John"}
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }""";
 
         ClashingFieldNames actualInstance = jsonSerde.deserialize(json, ClashingFieldNames.class);
@@ -1239,11 +1239,11 @@ public class JsonSerdeTest {
                           "val": {"type": "java.lang.Integer", "value": 45},
                           "next": {"type": "inc.evil.serde.JsonSerdeTest$Node", "value": null}
                         },
-                        "__idRef": 2
+                        "__id": 2
                       }
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }
                 """;
         assertJsonEquals(expectedJson, actualJson);
@@ -1266,11 +1266,11 @@ public class JsonSerdeTest {
                           "val": {"type": "java.lang.Integer", "value": 45},
                           "next": {"type": "inc.evil.serde.JsonSerdeTest$Node", "value": null}
                         },
-                        "__idRef": 2
+                        "__id": 2
                       }
                     }
                   },
-                  "__idRef": 1
+                  "__id": 1
                 }
                 """;
 
