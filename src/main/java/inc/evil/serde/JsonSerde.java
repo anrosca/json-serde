@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -198,7 +199,7 @@ class JsonSerde {
     }
 
     private boolean isCollection(Class<?> type) {
-        return type == ArrayList.class || type == HashSet.class;
+        return type == ArrayList.class || type == HashSet.class || type == LinkedList.class;
     }
 
     @SuppressWarnings("unchecked")
@@ -215,6 +216,8 @@ class JsonSerde {
             return BooleanNode.valueOf((Boolean) instance);
         } else if (isCollection(instance.getClass())) {
             return serializeCollection((Collection<Object>) instance);
+        } else if (isMap(instance.getClass())) {
+            return serializeMap((Map<Object, Object>) instance);
         } else if (instance.getClass().isEnum()) {
             return new TextNode(instance.toString());
         } else if (instance.getClass().isArray()) {
@@ -226,6 +229,21 @@ class JsonSerde {
         } else {
             return toJson(instance);
         }
+    }
+
+    private JsonNode serializeMap(Map<Object, Object> instance) {
+        ArrayNode jsonNodes = new ArrayNode(JsonNodeFactory.instance);
+        for (Map.Entry<Object, Object> entry : instance.entrySet()) {
+            ObjectNode mapEntryNode = new ObjectNode(JsonNodeFactory.instance);
+            mapEntryNode.set("key", serializeValue(entry.getKey()));
+            mapEntryNode.set("value", serializeValue(entry.getValue()));
+            jsonNodes.add(mapEntryNode);
+        }
+        return jsonNodes;
+    }
+
+    private boolean isMap(Class<?> clazz) {
+        return clazz == HashMap.class || clazz == ConcurrentHashMap.class || clazz == TreeMap.class;
     }
 
     private boolean isDate(Class<?> clazz) {
@@ -398,16 +416,37 @@ class JsonSerde {
     @SuppressWarnings("unchecked")
     private Object deserializeCollection(Class<?> resultingClass, ArrayNode arrayNode) throws Exception {
         if (isCollection(resultingClass)) {
-            Collection<Object> collection = (Collection<Object>) objectFactory.makeInstance(resultingClass);
-            for (int i = 0; i < arrayNode.size(); ++i) {
-                JsonNode currentNode = arrayNode.get(i);
-                Object value = currentNode.isObject() ? deserialize(currentNode.toString(), resultingClass) : getNodeValue(currentNode);
-                collection.add(value);
-            }
-            return collection;
+            return deserializeCommonCollection(resultingClass, arrayNode);
+        } else if (isMap(resultingClass)) {
+            return deserializeMap(resultingClass, arrayNode);
         } else {
             return /*deserializeArray(resultingClass, arrayNode)*/ null;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Collection<Object> deserializeCommonCollection(Class<?> resultingClass, ArrayNode arrayNode) throws Exception {
+        Collection<Object> collection = (Collection<Object>) objectFactory.makeInstance(resultingClass);
+        for (int i = 0; i < arrayNode.size(); ++i) {
+            JsonNode currentNode = arrayNode.get(i);
+            Object value = currentNode.isObject() ? deserialize(currentNode.toString(), resultingClass) : getNodeValue(currentNode);
+            collection.add(value);
+        }
+        return collection;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<Object, Object> deserializeMap(Class<?> resultingClass, ArrayNode arrayNode) throws Exception {
+        Map<Object, Object> map = (Map<Object, Object>) objectFactory.makeInstance(resultingClass);
+        for (int i = 0; i < arrayNode.size(); ++i) {
+            JsonNode currentNode = arrayNode.get(i);
+            JsonNode keyNode = currentNode.get("key");
+            JsonNode valueNode = currentNode.get("value");
+            Object key = keyNode.isObject() ? deserialize(keyNode.toString(), resultingClass) : getNodeValue(keyNode);
+            Object value = valueNode.isObject() ? deserialize(valueNode.toString(), resultingClass) : getNodeValue(valueNode);
+            map.put(key, value);
+        }
+        return map;
     }
 
     private boolean isBigNumber(Class<?> resultingClass) {
