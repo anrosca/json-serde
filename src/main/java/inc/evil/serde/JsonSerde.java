@@ -106,16 +106,20 @@ public class JsonSerde {
                 if (Modifier.isStatic(fieldModifiers)) {
                     continue;
                 }
-                if (/*isCollection(field.getType()) || */isPrimitive(field.getType())) {
-                    stateNode.set(makeFieldName(field, shouldQualifyFieldNames), serializeValue(field.get(instance)));
-                } else if (field.getType().isArray()) {
-                    stateNode.set(makeFieldName(field, shouldQualifyFieldNames), serializeArray(field.get(instance)));
-                } else {
-                    serializeObject(instance, stateNode, field, shouldQualifyFieldNames);
-                }
+                stateNode.set(makeFieldName(field, shouldQualifyFieldNames), serializeField(field, instance));
             }
         } while ((instanceClass = instanceClass.getSuperclass()) != null);
         return rootNode;
+    }
+
+    private JsonNode serializeField(Field field, Object instance) throws Exception {
+        if (/*isCollection(field.getType()) || */isPrimitive(field.getType())) {
+            return serializeValue(field.get(instance));
+        } else if (field.getType().isArray()) {
+            return serializeArray(field.get(instance));
+        } else {
+            return serializeObject(instance, field);
+        }
     }
 
     private String makeFieldName(Field field, boolean shouldQualify) {
@@ -126,19 +130,20 @@ public class JsonSerde {
         Set<String> fieldNames = new HashSet<>();
         do {
             for (Field field : clazz.getDeclaredFields()) {
-                if (!fieldNames.add(field.getName()))
+                if (!fieldNames.add(field.getName())) {
                     return true;
+                }
             }
         } while ((clazz = clazz.getSuperclass()) != null);
         return false;
     }
 
-    private void serializeObject(Object instance, ObjectNode stateNode, Field field, boolean qualifyFieldNames) throws IllegalAccessException {
+    private ObjectNode serializeObject(Object instance, Field field) throws IllegalAccessException {
         ObjectNode fieldNode = new ObjectNode(JsonNodeFactory.instance);
-        stateNode.set(makeFieldName(field, qualifyFieldNames), fieldNode);
         Object fieldValue = field.get(instance);
         fieldNode.set("type", new TextNode(fieldValue != null ? fieldValue.getClass().getName() : field.getType().getName()));
         fieldNode.set("value", serializeValue(field.get(instance)));
+        return fieldNode;
     }
 
     private JsonNode serializeArray(Object array) {
@@ -152,18 +157,22 @@ public class JsonSerde {
         Class<?> componentType = array.getClass().getComponentType();
         for (int i = 0; i < Array.getLength(array); ++i) {
             Object currentItem = Array.get(array, i);
-            if (isPrimitiveArray(componentType)) {
-                jsonNodes.add(serializeValue(currentItem));
-            } else if (currentItem != null && (!isWrapperOf(currentItem.getClass(), componentType))) {
-                ObjectNode itemNode = new ObjectNode(JsonNodeFactory.instance);
-                itemNode.set("type", new TextNode(currentItem.getClass().getName()));
-                itemNode.set("value", serializeValue(currentItem));
-                jsonNodes.add(itemNode);
-            } else {
-                jsonNodes.add(serializeValue(currentItem));
-            }
+            jsonNodes.add(serializeArrayItem(currentItem, componentType));
         }
         return objectNode;
+    }
+
+    private JsonNode serializeArrayItem(Object currentItem, Class<?> componentType) {
+        if (isPrimitiveArray(componentType)) {
+            return serializeValue(currentItem);
+        } else if (currentItem != null && (!isWrapperOf(currentItem.getClass(), componentType))) {
+            ObjectNode itemNode = new ObjectNode(JsonNodeFactory.instance);
+            itemNode.set("type", new TextNode(currentItem.getClass().getName()));
+            itemNode.set("value", serializeValue(currentItem));
+            return itemNode;
+        } else {
+            return serializeValue(currentItem);
+        }
     }
 
     private boolean isPrimitiveArray(Class<?> componentType) {
@@ -218,8 +227,8 @@ public class JsonSerde {
 
     private boolean isDate(Class<?> clazz) {
         return clazz == LocalDateTime.class || clazz == LocalDate.class ||
-                clazz == OffsetDateTime.class || clazz == ZonedDateTime.class ||
-                clazz == Period.class || clazz == Duration.class;
+               clazz == OffsetDateTime.class || clazz == ZonedDateTime.class ||
+               clazz == Period.class || clazz == Duration.class;
     }
 
     private ArrayNode serializeCollection(Collection<Object> instance) {
@@ -393,19 +402,15 @@ public class JsonSerde {
                 return deserializeArray(resultingClass, (ArrayNode) value);
             } else if (isDate(resultingClass)) {
                 return deserializeDate(resultingClass, value.asText());
-            } else if (isPrimitiveOrWrapper(resultingClass)) {
-                return castValueTo(getNodeValue(value), resultingClass);
-            } else if (value.isNumber()) {
+            } else if (value.isNumber() || isBigNumber(resultingClass) || isPrimitiveOrWrapper(resultingClass)) {
                 return castValueTo(getNodeValue(value), resultingClass);
             }
         }
-        if (value.isTextual()) {
-            return value.asText();
-        }
-        if (value.isNumber()) {
-            return getNodeValue(value);
-        }
         return null;
+    }
+
+    private boolean isBigNumber(Class<?> resultingClass) {
+        return resultingClass == BigDecimal.class || resultingClass == BigInteger.class;
     }
 
     private boolean isPrimitiveOrWrapper(Class<?> clazz) {

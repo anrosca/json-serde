@@ -2,6 +2,9 @@ package inc.evil.serde;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -58,7 +61,7 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserialize_objectWithFinalFields() {
         String json = """
                 {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$FinalFieldsDummy",
+                  "targetClass" : "inc.evil.serde.JsonSerdeTest$FinalFields",
                   "state" : {
                     "firstName" : {
                       "type" : "java.lang.String",
@@ -72,9 +75,9 @@ public class JsonSerdeTest {
                   "__idRef": 1
                 }""";
 
-        FinalFieldsDummy actualInstance = jsonSerde.deserialize(json, FinalFieldsDummy.class);
+        FinalFields actualInstance = jsonSerde.deserialize(json, FinalFields.class);
 
-        assertEquals(new FinalFieldsDummy("Mike", "Smith"), actualInstance);
+        assertEquals(new FinalFields("Mike", "Smith"), actualInstance);
     }
 
     @Test
@@ -172,7 +175,7 @@ public class JsonSerdeTest {
 
     @Test
     public void shouldBeAbleToSerialize_objectWithPrimitiveArraysFields() {
-        PrimitiveArrayDummy dummy = new PrimitiveArrayDummy(
+        PrimitiveArrays dummy = new PrimitiveArrays(
                 new boolean[]{true, false},
                 new byte[]{1},
                 new char[]{13},
@@ -187,7 +190,7 @@ public class JsonSerdeTest {
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PrimitiveArrayDummy",
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$PrimitiveArrays",
                   "state": {
                     "booleanArray": {"type": "[Z", "value": [true, false]},
                     "byteArray":    {"type": "[B","value": [1]},
@@ -207,7 +210,7 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserialize_objectWithPrimitiveArraysFields() {
         String json = """
                 {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PrimitiveArrayDummy",
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$PrimitiveArrays",
                   "state": {
                     "booleanArray": {"type": "[Z", "value": [true, false]},
                     "byteArray":    {"type": "[B","value": [1]},
@@ -221,9 +224,9 @@ public class JsonSerdeTest {
                   "__idRef": 1
                 }""";
 
-        PrimitiveArrayDummy actualInstance = jsonSerde.deserialize(json, PrimitiveArrayDummy.class);
+        PrimitiveArrays actualInstance = jsonSerde.deserialize(json, PrimitiveArrays.class);
 
-        PrimitiveArrayDummy expectedInstance = new PrimitiveArrayDummy(
+        PrimitiveArrays expectedInstance = new PrimitiveArrays(
                 new boolean[]{true, false},
                 new byte[]{1},
                 new char[]{13},
@@ -238,26 +241,26 @@ public class JsonSerdeTest {
 
     @Test
     public void shouldBeAbleToSerializeAndDeserializeHashMaps() {
-        Map<String, StringDummy> map = new ConcurrentHashMap<>();
-        map.put("one", new StringDummy("Mike", "Smith"));
-        map.put("two", new StringDummy("John", "Doe"));
-        MapDummy expectedMap = new MapDummy(map);
+        Map<String, StringFields> map = new ConcurrentHashMap<>();
+        map.put("one", new StringFields("Mike", "Smith"));
+        map.put("two", new StringFields("John", "Doe"));
+        MapFields expectedMap = new MapFields(map);
 
         String json = jsonSerde.serialize(expectedMap);
-        MapDummy actualMap = jsonSerde.deserialize(json, MapDummy.class);
+        MapFields actualMap = jsonSerde.deserialize(json, MapFields.class);
 
         assertEquals(expectedMap, actualMap);
     }
 
     @Test
     public void shouldBeAbleToSerializeToJson_objectWithStringFields() {
-        StringDummy dummy = new StringDummy("Mike", "Smith");
+        StringFields dummy = new StringFields("Mike", "Smith");
 
         String actualJson = jsonSerde.serialize(dummy);
 
         String expectedJson = """
                 {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$StringDummy",
+                  "targetClass" : "inc.evil.serde.JsonSerdeTest$StringFields",
                   "state" : {
                     "firstName" : {
                       "type" : "java.lang.String",
@@ -275,21 +278,21 @@ public class JsonSerdeTest {
 
     @Test
     public void shouldBeAbleToSerializeToJson_objectWithArrayFields() {
-        ArrayDummy dummy = new ArrayDummy(new StringDummy[]{new StringDummy("Mike", "Smith"), new StringDummy("Dennis", "Ritchie")});
+        PojoArrays dummy = new PojoArrays(new StringFields[]{new StringFields("Mike", "Smith"), new StringFields("Dennis", "Ritchie")});
 
         String actualJson = jsonSerde.serialize(dummy);
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$ArrayDummy",
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoArrays",
                   "state": {
                     "strings": {
-                      "type": "[Linc.evil.serde.JsonSerdeTest$StringDummy;",
+                      "type": "[Linc.evil.serde.JsonSerdeTest$StringFields;",
                       "value": [
                         {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                           "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
                             "state": {
                               "firstName": {"type": "java.lang.String", "value": "Mike"},
                               "lastName": {"type": "java.lang.String", "value": "Smith"}},
@@ -297,9 +300,9 @@ public class JsonSerdeTest {
                           }
                         },
                         {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                           "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
                             "state": {
                               "firstName": {"type": "java.lang.String", "value": "Dennis"},
                               "lastName": {"type": "java.lang.String", "value": "Ritchie"}},
@@ -318,15 +321,15 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserializeToJson_objectWithArrayOfObjectsFields() {
         String json = """
                 {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$ArrayDummy",
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoArrays",
                   "state": {
                     "strings": {
-                      "type": "[Linc.evil.serde.JsonSerdeTest$StringDummy;",
+                      "type": "[Linc.evil.serde.JsonSerdeTest$StringFields;",
                       "value": [
                         {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                           "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
                             "state": {
                               "firstName": {"type": "java.lang.String", "value": "Mike"},
                               "lastName": {"type": "java.lang.String", "value": "Smith"}},
@@ -334,9 +337,9 @@ public class JsonSerdeTest {
                           }
                         },
                         {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                           "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
                             "state": {
                               "firstName": {"type": "java.lang.String", "value": "Dennis"},
                               "lastName": {"type": "java.lang.String", "value": "Ritchie"}},
@@ -349,15 +352,15 @@ public class JsonSerdeTest {
                   "__idRef": 1
                 }""";
 
-        ArrayDummy actualObject = jsonSerde.deserialize(json, ArrayDummy.class);
+        PojoArrays actualObject = jsonSerde.deserialize(json, PojoArrays.class);
 
-        ArrayDummy expectedObject = new ArrayDummy(new StringDummy[]{new StringDummy("Mike", "Smith"), new StringDummy("Dennis", "Ritchie")});
+        PojoArrays expectedObject = new PojoArrays(new StringFields[]{new StringFields("Mike", "Smith"), new StringFields("Dennis", "Ritchie")});
         assertEquals(expectedObject, actualObject);
     }
 
     @Test
     public void shouldBeAbleToSerializeToJson_objectWithPrimitiveFields() {
-        PrimitivesDummy dummy = new PrimitivesDummy(
+        PrimitivesTypes dummy = new PrimitivesTypes(
                 true,
                 (byte) 1,
                 (char) 2,
@@ -372,7 +375,7 @@ public class JsonSerdeTest {
 
         String expectedJson = """
                 {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$PrimitivesDummy",
+                  "targetClass" : "inc.evil.serde.JsonSerdeTest$PrimitivesTypes",
                   "state" : {
                     "booleanField" : true,
                     "byteField" : 1,
@@ -392,7 +395,7 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserializeToJson_objectWithPrimitiveFields() {
         String json = """
                 {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$PrimitivesDummy",
+                  "targetClass" : "inc.evil.serde.JsonSerdeTest$PrimitivesTypes",
                   "state" : {
                     "booleanField" : true,
                     "byteField" : 1,
@@ -406,9 +409,9 @@ public class JsonSerdeTest {
                   "__idRef": 1
                 }""";
 
-        PrimitivesDummy actualObject = jsonSerde.deserialize(json, PrimitivesDummy.class);
+        PrimitivesTypes actualObject = jsonSerde.deserialize(json, PrimitivesTypes.class);
 
-        PrimitivesDummy expectedObject = new PrimitivesDummy(true, (byte) 1, (char) 2, (short) 3, 4, 5L, 6.5f, 7.5D);
+        PrimitivesTypes expectedObject = new PrimitivesTypes(true, (byte) 1, (char) 2, (short) 3, 4, 5L, 6.5f, 7.5D);
         assertEquals(expectedObject, actualObject);
     }
 
@@ -455,19 +458,19 @@ public class JsonSerdeTest {
 
     @Test
     public void shouldBeAbleToSerializeToJson_objectWithNestedObjects() {
-        PojoDummy dummy = new PojoDummy(new StringDummy("Mike", "Smith"), 42);
+        PojoFields dummy = new PojoFields(new StringFields("Mike", "Smith"), 42);
 
         String actualJson = jsonSerde.serialize(dummy);
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoDummy",
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoFields",
                   "__idRef": 1,
                   "state": {
                     "user": {
-                      "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                      "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                       "value": {
-                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
                         "__idRef": 2,
                         "state": {
                           "firstName": {
@@ -491,13 +494,13 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserializeToJson_objectWithNestedObjects() {
         String json = """
                 {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoDummy",
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoFields",
                   "__idRef": 1,
                   "state": {
                     "user": {
-                      "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                      "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                       "value": {
-                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
                         "__idRef": 2,
                         "state": {
                           "firstName": {
@@ -515,25 +518,25 @@ public class JsonSerdeTest {
                   }
                 }""";
 
-        PojoDummy actualObject = jsonSerde.deserialize(json, PojoDummy.class);
+        PojoFields actualObject = jsonSerde.deserialize(json, PojoFields.class);
 
-        PojoDummy expectedObject = new PojoDummy(new StringDummy("Mike", "Smith"), 42);
+        PojoFields expectedObject = new PojoFields(new StringFields("Mike", "Smith"), 42);
         assertEquals(expectedObject, actualObject);
     }
 
     @Test
     public void shouldBeAbleToSerializeToJson_objectWithEnumFields() {
-        EnumDummy dummy = new EnumDummy(EnumDummy.Season.SPRING, "Mike", null);
+        EnumFieldValues dummy = new EnumFieldValues(EnumFieldValues.Season.SPRING, "Mike", null);
 
         String actualJson = jsonSerde.serialize(dummy);
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$EnumDummy",
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$EnumFieldValues",
                   "state": {
-                    "season": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": "SPRING"},
+                    "season": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": "SPRING"},
                     "name": {"type": "java.lang.String", "value": "Mike"},
-                    "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": null}
+                    "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": null}
                   },
                   "__idRef": 1
                 }""";
@@ -544,30 +547,30 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserializeToJson_objectWithEnumFields() {
         String json = """
                 {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$EnumDummy",
+                  "targetClass": "inc.evil.serde.JsonSerdeTest$EnumFieldValues",
                   "state": {
-                    "season": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": "SPRING"},
+                    "season": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": "SPRING"},
                     "name": {"type": "java.lang.String", "value": "Mike"},
-                    "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumDummy$Season", "value": null}
+                    "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": null}
                   },
                   "__idRef": 1
                 }""";
 
-        EnumDummy actualDeserializedInstance = jsonSerde.deserialize(json, EnumDummy.class);
+        EnumFieldValues actualDeserializedInstance = jsonSerde.deserialize(json, EnumFieldValues.class);
 
-        EnumDummy expectedInstance = new EnumDummy(EnumDummy.Season.SPRING, "Mike", null);
+        EnumFieldValues expectedInstance = new EnumFieldValues(EnumFieldValues.Season.SPRING, "Mike", null);
         assertEquals(actualDeserializedInstance, expectedInstance);
     }
 
     @Test
     public void shouldBeAbleToSerializeToJson_objectWithListFields() {
-        ListDummy dummy = new ListDummy(List.of("Funky", "shit"));
+        ListOfStrings dummy = new ListOfStrings(List.of("Funky", "shit"));
 
         String actualJson = jsonSerde.serialize(dummy);
 
         String expectedJson = """
                 {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$ListDummy",
+                   "targetClass": "inc.evil.serde.JsonSerdeTest$ListOfStrings",
                    "state": {
                      "values": {
                        "type": "java.util.ImmutableCollections$List12",
@@ -660,7 +663,7 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserializeToJson_objectWithListFields() {
         String json = """
                 {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$ListDummy",
+                   "targetClass": "inc.evil.serde.JsonSerdeTest$ListOfStrings",
                    "state": {
                      "values": {
                        "type": "java.util.ImmutableCollections$List12",
@@ -677,9 +680,9 @@ public class JsonSerdeTest {
                    "__idRef": 1
                  }""";
 
-        ListDummy actualDummy = jsonSerde.deserialize(json, ListDummy.class);
+        ListOfStrings actualDummy = jsonSerde.deserialize(json, ListOfStrings.class);
 
-        ListDummy expectedDummy = new ListDummy(List.of("Funky", "shit"));
+        ListOfStrings expectedDummy = new ListOfStrings(List.of("Funky", "shit"));
         assertEquals(expectedDummy, actualDummy);
     }
 
@@ -687,7 +690,7 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserializeToJson_objectWithStringFields() {
         String json = """
                 {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$StringDummy",
+                  "targetClass" : "inc.evil.serde.JsonSerdeTest$StringFields",
                   "state" : {
                     "firstName" : {
                       "type" : "java.lang.String",
@@ -701,9 +704,9 @@ public class JsonSerdeTest {
                   "__idRef": 1
                 }""";
 
-        StringDummy actualDeserializedInstance = jsonSerde.deserialize(json, StringDummy.class);
+        StringFields actualDeserializedInstance = jsonSerde.deserialize(json, StringFields.class);
 
-        assertEquals(new StringDummy("Mike", "Smith"), actualDeserializedInstance);
+        assertEquals(new StringFields("Mike", "Smith"), actualDeserializedInstance);
     }
 
     @Test
@@ -1131,7 +1134,7 @@ public class JsonSerdeTest {
     public void shouldBeAbleToSerializeToJson_objectsWithObjectArraysFields() {
         ObjectArrays objectArrays = new ObjectArrays(
                 new Object[]{
-                        Override.class, "Mike", 42, new StringDummy("John", "Doe")
+                        Override.class, "Mike", 42, new StringFields("John", "Doe")
                 }
         );
 
@@ -1148,9 +1151,9 @@ public class JsonSerdeTest {
                         {"type": "java.lang.String", "value": "Mike"},
                         {"type": "java.lang.Integer", "value": 42},
                         {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                           "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
                             "state": {
                               "firstName": {"type": "java.lang.String", "value": "John"},
                               "lastName": {"type": "java.lang.String", "value": "Doe"}
@@ -1179,9 +1182,9 @@ public class JsonSerdeTest {
                         {"type": "java.lang.String", "value": "Mike"},
                         {"type": "java.lang.Integer", "value": 42},
                         {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                           "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
                             "state": {
                               "firstName": {"type": "java.lang.String", "value": "John"},
                               "lastName": {"type": "java.lang.String", "value": "Doe"}
@@ -1199,7 +1202,7 @@ public class JsonSerdeTest {
 
         ObjectArrays expectedInstance = new ObjectArrays(
                 new Object[]{
-                        Override.class, "Mike", 42, new StringDummy("John", "Doe")
+                        Override.class, "Mike", 42, new StringFields("John", "Doe")
                 }
         );
         assertEquals(expectedInstance, actualInstance);
@@ -1207,7 +1210,7 @@ public class JsonSerdeTest {
 
     @Test
     public void shouldBeAbleToSerializeToJson_objectsWithClashingFieldNames() {
-        ClashingFieldNames clashingFieldNames = new ClashingFieldNames("John", new StringDummy("Mike", "Smith"));
+        ClashingFieldNames clashingFieldNames = new ClashingFieldNames("John", new StringFields("Mike", "Smith"));
 
         String actualJson = jsonSerde.serialize(clashingFieldNames);
 
@@ -1216,9 +1219,9 @@ public class JsonSerdeTest {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$ClashingFieldNames",
                   "state": {
                     "inc.evil.serde.JsonSerdeTest$ClashingFieldNames.name": {
-                      "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                      "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                       "value": {
-                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
                         "state": {
                           "firstName": {"type": "java.lang.String", "value": "Mike"},
                           "lastName": {"type": "java.lang.String", "value": "Smith"}},
@@ -1239,9 +1242,9 @@ public class JsonSerdeTest {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$ClashingFieldNames",
                   "state": {
                     "inc.evil.serde.JsonSerdeTest$ClashingFieldNames.name": {
-                      "type": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                      "type": "inc.evil.serde.JsonSerdeTest$StringFields",
                       "value": {
-                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringDummy",
+                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
                         "state": {
                           "firstName": {"type": "java.lang.String", "value": "Mike"},
                           "lastName": {"type": "java.lang.String", "value": "Smith"}},
@@ -1255,7 +1258,7 @@ public class JsonSerdeTest {
 
         ClashingFieldNames actualInstance = jsonSerde.deserialize(json, ClashingFieldNames.class);
 
-        ClashingFieldNames expectedInstance = new ClashingFieldNames("John", new StringDummy("Mike", "Smith"));
+        ClashingFieldNames expectedInstance = new ClashingFieldNames("John", new StringFields("Mike", "Smith"));
         assertEquals(expectedInstance, actualInstance);
     }
 
@@ -1329,7 +1332,7 @@ public class JsonSerdeTest {
         }
     }
 
-    public static class Node<K,V> {
+    public static class Node<K, V> {
         final int hash;
         final K key;
         volatile V val;
@@ -1346,12 +1349,15 @@ public class JsonSerdeTest {
             this.next = next;
         }
 
-        public final int hashCode() { return key.hashCode() ^ val.hashCode(); }
+        public final int hashCode() {
+            return key.hashCode() ^ val.hashCode();
+        }
 
         public final boolean equals(Object o) {
-            Object k, v, u; Node<?,?> e;
+            Object k, v, u;
+            Node<?, ?> e;
             return ((o instanceof Node) &&
-                    (k = (e = (Node<?,?>)o).key) != null &&
+                    (k = (e = (Node<?, ?>) o).key) != null &&
                     (v = e.val) != null &&
                     (k == key || k.equals(key)) &&
                     (v == (u = val) || v.equals(u)));
@@ -1368,224 +1374,72 @@ public class JsonSerdeTest {
         }
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     public static class NullClassFields {
         private final Class<?> targetClass;
         private final String name;
-
-        public NullClassFields(Class<?> targetClass, String name) {
-            this.targetClass = targetClass;
-            this.name = name;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            NullClassFields that = (NullClassFields) o;
-
-            if (targetClass != null ? !targetClass.equals(that.targetClass) : that.targetClass != null) return false;
-            return name != null ? name.equals(that.name) : that.name == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = targetClass != null ? targetClass.hashCode() : 0;
-            result = 31 * result + (name != null ? name.hashCode() : 0);
-            return result;
-        }
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     public static class ObjectArrays {
         private final Object[] objects;
-
-        public ObjectArrays(Object[] objects) {
-            this.objects = objects;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ObjectArrays that = (ObjectArrays) o;
-
-            // Probably incorrect - comparing Object[] arrays with Arrays.equals
-            return Arrays.equals(objects, that.objects);
-        }
-
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(objects);
-        }
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     public static class NullInterfaceFields {
         private List<String> strings;
-
-        public NullInterfaceFields(List<String> strings) {
-            this.strings = strings;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            NullInterfaceFields that = (NullInterfaceFields) o;
-
-            return strings != null ? strings.equals(that.strings) : that.strings == null;
-        }
-
-        @Override
-        public int hashCode() {
-            return strings != null ? strings.hashCode() : 0;
-        }
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     public static class NullArrays {
         private final byte[] bytes;
-        private final StringDummy[] strings;
-
-        public NullArrays(byte[] bytes, StringDummy[] strings) {
-            this.bytes = bytes;
-            this.strings = strings;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            NullArrays that = (NullArrays) o;
-
-            if (!Arrays.equals(bytes, that.bytes)) return false;
-            // Probably incorrect - comparing Object[] arrays with Arrays.equals
-            return Arrays.equals(strings, that.strings);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = Arrays.hashCode(bytes);
-            result = 31 * result + Arrays.hashCode(strings);
-            return result;
-        }
+        private final StringFields[] strings;
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     public static class PeriodsAndDurations {
         private final Period period;
         private final Duration duration;
-
-        public PeriodsAndDurations(Period period, Duration duration) {
-            this.period = period;
-            this.duration = duration;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            PeriodsAndDurations that = (PeriodsAndDurations) o;
-
-            if (period != null ? !period.equals(that.period) : that.period != null) return false;
-            return duration != null ? duration.equals(that.duration) : that.duration == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = period != null ? period.hashCode() : 0;
-            result = 31 * result + (duration != null ? duration.hashCode() : 0);
-            return result;
-        }
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     public static class BigNumbers {
         private final BigDecimal bigDecimal;
         private final BigInteger bigInteger;
-
-        public BigNumbers(BigDecimal bigDecimal, BigInteger bigInteger) {
-            this.bigDecimal = bigDecimal;
-            this.bigInteger = bigInteger;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            BigNumbers that = (BigNumbers) o;
-
-            if (bigDecimal != null ? !bigDecimal.equals(that.bigDecimal) : that.bigDecimal != null) return false;
-            return bigInteger != null ? bigInteger.equals(that.bigInteger) : that.bigInteger == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = bigDecimal != null ? bigDecimal.hashCode() : 0;
-            result = 31 * result + (bigInteger != null ? bigInteger.hashCode() : 0);
-            return result;
-        }
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     public static class NullWrappers {
         private final Long id;
         private final long age;
-
-        public NullWrappers(Long id, long age) {
-            this.id = id;
-            this.age = age;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            NullWrappers that = (NullWrappers) o;
-
-            if (age != that.age) return false;
-            return id != null ? id.equals(that.id) : that.id == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = id != null ? id.hashCode() : 0;
-            result = 31 * result + (int) age;
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "NullWrappers{" +
-                    "id=" + id +
-                    ", age=" + age +
-                    '}';
-        }
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     public static class AtomicNumbers {
         private final AtomicInteger atomicInteger;
         private final AtomicLong atomicLong;
-
-        public AtomicNumbers(AtomicInteger atomicInteger, AtomicLong atomicLong) {
-            this.atomicInteger = atomicInteger;
-            this.atomicLong = atomicLong;
-        }
-
-        @Override
-        public String toString() {
-            return "AtomicNumbers{" +
-                    "atomicInteger=" + atomicInteger +
-                    ", atomicLong=" + atomicLong +
-                    '}';
-        }
     }
 
     public static class ClashingFieldNames extends Named {
-        private final StringDummy name;
+        private final StringFields name;
 
-        public ClashingFieldNames(String name, StringDummy name1) {
+        public ClashingFieldNames(String name, StringFields name1) {
             super(name);
             this.name = name1;
         }
@@ -1606,125 +1460,49 @@ public class JsonSerdeTest {
         }
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     public static class NullDates {
         private final LocalDate localDate;
         private final LocalDateTime localDateTime;
         private final OffsetDateTime offsetDateTime;
-
-        public NullDates(LocalDate localDate, LocalDateTime localDateTime, OffsetDateTime offsetDateTime) {
-            this.localDate = localDate;
-            this.localDateTime = localDateTime;
-            this.offsetDateTime = offsetDateTime;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            NullDates nullDates = (NullDates) o;
-
-            if (localDate != null ? !localDate.equals(nullDates.localDate) : nullDates.localDate != null) return false;
-            if (localDateTime != null ? !localDateTime.equals(nullDates.localDateTime) : nullDates.localDateTime != null)
-                return false;
-            return offsetDateTime != null ? offsetDateTime.equals(nullDates.offsetDateTime) : nullDates.offsetDateTime == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = localDate != null ? localDate.hashCode() : 0;
-            result = 31 * result + (localDateTime != null ? localDateTime.hashCode() : 0);
-            result = 31 * result + (offsetDateTime != null ? offsetDateTime.hashCode() : 0);
-            return result;
-        }
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     public static class Dates {
         private final LocalDate localDate;
         private final LocalDateTime localDateTime;
         private final OffsetDateTime offsetDateTime;
         private final ZonedDateTime zonedDateTime;
-
-        public Dates(LocalDate localDate, LocalDateTime localDateTime, OffsetDateTime offsetDateTime, ZonedDateTime zonedDateTime) {
-            this.localDate = localDate;
-            this.localDateTime = localDateTime;
-            this.offsetDateTime = offsetDateTime;
-            this.zonedDateTime = zonedDateTime;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Dates dates = (Dates) o;
-
-            if (localDate != null ? !localDate.equals(dates.localDate) : dates.localDate != null) return false;
-            if (localDateTime != null ? !localDateTime.equals(dates.localDateTime) : dates.localDateTime != null)
-                return false;
-            if (offsetDateTime != null ? !offsetDateTime.equals(dates.offsetDateTime) : dates.offsetDateTime != null)
-                return false;
-            return zonedDateTime != null ? zonedDateTime.equals(dates.zonedDateTime) : dates.zonedDateTime == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = localDate != null ? localDate.hashCode() : 0;
-            result = 31 * result + (localDateTime != null ? localDateTime.hashCode() : 0);
-            result = 31 * result + (offsetDateTime != null ? offsetDateTime.hashCode() : 0);
-            result = 31 * result + (zonedDateTime != null ? zonedDateTime.hashCode() : 0);
-            return result;
-        }
     }
 
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     public static class UpcastToObject {
         private final Object source;
         private final String name;
+    }
 
-        public UpcastToObject(Object source, String name) {
-            this.source = source;
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class ClassLiteral {
+        private Class<?> targetClass;
+    }
+
+    public static class Named {
+        protected String name;
+
+        public Named(String name) {
             this.name = name;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            UpcastToObject that = (UpcastToObject) o;
-
-            if (source != null ? !source.equals(that.source) : that.source != null) return false;
-            return name != null ? name.equals(that.name) : that.name == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = source != null ? source.hashCode() : 0;
-            result = 31 * result + (name != null ? name.hashCode() : 0);
-            return result;
-        }
-    }
-
-    public static class ClassLiteral {
-        private Class<?> targetClass;
-
-        public ClassLiteral(Class<?> targetClass) {
-            this.targetClass = targetClass;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ClassLiteral that = (ClassLiteral) o;
-
-            return targetClass != null ? targetClass.equals(that.targetClass) : that.targetClass == null;
-        }
-
-        @Override
-        public int hashCode() {
-            return targetClass != null ? targetClass.hashCode() : 0;
+        public String getName() {
+            return name;
         }
     }
 
@@ -1745,18 +1523,15 @@ public class JsonSerdeTest {
         }
     }
 
-    public static class Named {
-        protected String name;
-
-        public Named(String name) {
+    public static class CircularInstance2 {
+        private final CircularInstance1 circularInstance1;
+        private final String name;
+        public CircularInstance2(CircularInstance1 circularInstance1, String name) {
+            this.circularInstance1 = circularInstance1;
             this.name = name;
         }
 
-        public String getName() {
-            return name;
-        }
     }
-
     public static class InheritedFields extends Named {
         private int age;
 
@@ -1779,143 +1554,54 @@ public class JsonSerdeTest {
         public int hashCode() {
             return Objects.hash(age, name);
         }
-    }
-
-    public static class CircularInstance2 {
-        private final CircularInstance1 circularInstance1;
-        private final String name;
-
-        public CircularInstance2(CircularInstance1 circularInstance1, String name) {
-            this.circularInstance1 = circularInstance1;
-            this.name = name;
-        }
-    }
-
-    public static class MultidimensionalArrays {
-        private boolean[][] booleans;
-
-        public MultidimensionalArrays(boolean[][] booleans) {
-            this.booleans = booleans;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            MultidimensionalArrays that = (MultidimensionalArrays) o;
-
-            return Arrays.deepEquals(booleans, that.booleans);
-        }
-
-        @Override
-        public int hashCode() {
-            return Arrays.deepHashCode(booleans);
-        }
 
         @Override
         public String toString() {
-            return "MultidimensionalArrays{" +
-                    "booleans=" + Arrays.toString(booleans) +
+            return "InheritedFields{" +
+                    "name='" + name + '\'' +
+                    ", age=" + age +
                     '}';
         }
     }
 
-    public static class MapDummy {
-        private Map<String, StringDummy> map;
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class MultidimensionalArrays {
 
-        public MapDummy(Map<String, StringDummy> map) {
-            this.map = map;
-        }
+        private boolean[][] booleans;
+    }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            MapDummy mapDummy = (MapDummy) o;
-
-            return map != null ? map.equals(mapDummy.map) : mapDummy.map == null;
-        }
-
-        @Override
-        public int hashCode() {
-            return map != null ? map.hashCode() : 0;
-        }
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class MapFields {
+        private final Map<String, StringFields> map;
     }
 
     public static class NoFields {
     }
 
-    public static class FinalFieldsDummy {
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class FinalFields {
         private final String firstName;
         private final String lastName;
-
-        public FinalFieldsDummy(String firstName, String lastName) {
-            this.firstName = firstName;
-            this.lastName = lastName;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            FinalFieldsDummy that = (FinalFieldsDummy) o;
-
-            if (firstName != null ? !firstName.equals(that.firstName) : that.firstName != null) return false;
-            return lastName != null ? lastName.equals(that.lastName) : that.lastName == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = firstName != null ? firstName.hashCode() : 0;
-            result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-            return result;
-        }
     }
 
-    public static class StringDummy {
-
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class StringFields {
         private String firstName;
         private String lastName;
-
-        public StringDummy() {
-        }
-
-        public StringDummy(String firstName, String lastName) {
-            this.firstName = firstName;
-            this.lastName = lastName;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            StringDummy dummy = (StringDummy) o;
-
-            if (firstName != null ? !firstName.equals(dummy.firstName) : dummy.firstName != null) return false;
-            return lastName != null ? lastName.equals(dummy.lastName) : dummy.lastName == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = firstName != null ? firstName.hashCode() : 0;
-            result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "StringDummy{" +
-                    "firstName='" + firstName + '\'' +
-                    ", lastName='" + lastName + '\'' +
-                    '}';
-        }
     }
 
-    public static class PrimitiveArrayDummy {
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class PrimitiveArrays {
         boolean[] booleanArray;
         byte[] byteArray;
         char[] charArray;
@@ -1924,184 +1610,44 @@ public class JsonSerdeTest {
         long[] longArray;
         float[] floatArray;
         double[] doubleArray;
-
-        public PrimitiveArrayDummy(boolean[] booleanArray, byte[] byteArray, char[] charArray, short[] shortArray, int[] intArray, long[] longArray, float[] floatArray, double[] doubleArray) {
-            this.booleanArray = booleanArray;
-            this.byteArray = byteArray;
-            this.charArray = charArray;
-            this.shortArray = shortArray;
-            this.intArray = intArray;
-            this.longArray = longArray;
-            this.floatArray = floatArray;
-            this.doubleArray = doubleArray;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            PrimitiveArrayDummy that = (PrimitiveArrayDummy) o;
-
-            if (!Arrays.equals(booleanArray, that.booleanArray)) return false;
-            if (!Arrays.equals(byteArray, that.byteArray)) return false;
-            if (!Arrays.equals(charArray, that.charArray)) return false;
-            if (!Arrays.equals(shortArray, that.shortArray)) return false;
-            if (!Arrays.equals(intArray, that.intArray)) return false;
-            if (!Arrays.equals(longArray, that.longArray)) return false;
-            if (!Arrays.equals(floatArray, that.floatArray)) return false;
-            return Arrays.equals(doubleArray, that.doubleArray);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = Arrays.hashCode(booleanArray);
-            result = 31 * result + Arrays.hashCode(byteArray);
-            result = 31 * result + Arrays.hashCode(charArray);
-            result = 31 * result + Arrays.hashCode(shortArray);
-            result = 31 * result + Arrays.hashCode(intArray);
-            result = 31 * result + Arrays.hashCode(longArray);
-            result = 31 * result + Arrays.hashCode(floatArray);
-            result = 31 * result + Arrays.hashCode(doubleArray);
-            return result;
-        }
     }
 
-    public static class ArrayDummy {
-        private StringDummy[] strings;
-
-        public ArrayDummy(StringDummy[] strings) {
-            this.strings = strings;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ArrayDummy that = (ArrayDummy) o;
-
-            // Probably incorrect - comparing Object[] arrays with Arrays.equals
-            return Arrays.equals(strings, that.strings);
-        }
-
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(strings);
-        }
-
-        @Override
-        public String toString() {
-            return "ArrayDummy{" +
-                    "strings=" + Arrays.toString(strings) +
-                    '}';
-        }
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class PojoArrays {
+        private StringFields[] strings;
     }
 
-    public static class PojoDummy {
-        private StringDummy user;
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class PojoFields {
+        private StringFields user;
         private int age;
-
-        public PojoDummy(StringDummy user, int age) {
-            this.user = user;
-            this.age = age;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            PojoDummy pojoDummy = (PojoDummy) o;
-
-            if (age != pojoDummy.age) return false;
-            return user != null ? user.equals(pojoDummy.user) : pojoDummy.user == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = user != null ? user.hashCode() : 0;
-            result = 31 * result + age;
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "PojoDummy{" +
-                    "user=" + user +
-                    ", age=" + age +
-                    '}';
-        }
     }
 
-    public static class ListDummy {
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class ListOfStrings {
         private List<String> values;
-
-        public ListDummy() {
-        }
-
-        public ListDummy(List<String> values) {
-            this.values = values;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ListDummy listDummy = (ListDummy) o;
-
-            return values != null ? values.equals(listDummy.values) : listDummy.values == null;
-        }
-
-        @Override
-        public int hashCode() {
-            return values != null ? values.hashCode() : 0;
-        }
     }
 
-    public static class EnumDummy {
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class EnumFieldValues {
         enum Season {SPRING, WINTER}
 
         private Season season;
         private String name;
         private Season nullableSeason;
-
-        public EnumDummy(Season season, String name, Season nullableSeason) {
-            this.season = season;
-            this.name = name;
-            this.nullableSeason = nullableSeason;
-        }
-
-        public EnumDummy() {
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            EnumDummy enumDummy = (EnumDummy) o;
-
-            if (season != enumDummy.season) return false;
-            if (name != null ? !name.equals(enumDummy.name) : enumDummy.name != null) return false;
-            return nullableSeason == enumDummy.nullableSeason;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = season != null ? season.hashCode() : 0;
-            result = 31 * result + (name != null ? name.hashCode() : 0);
-            result = 31 * result + (nullableSeason != null ? nullableSeason.hashCode() : 0);
-            return result;
-        }
     }
 
     public static class IgnoreStaticFields {
         static int id = 42;
-
         transient int age = 666;
-
         private String name;
 
         public IgnoreStaticFields(String name) {
@@ -2133,7 +1679,10 @@ public class JsonSerdeTest {
         }
     }
 
-    public static class PrimitivesDummy {
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class PrimitivesTypes {
         private boolean booleanField;
         private byte byteField;
         private char charField;
@@ -2142,49 +1691,5 @@ public class JsonSerdeTest {
         private long longField;
         private float floatField;
         private double doubleField;
-
-        public PrimitivesDummy(boolean booleanField, byte byteField, char charField, short shortField, int intField, long longField, float floatField, double doubleField) {
-            this.booleanField = booleanField;
-            this.byteField = byteField;
-            this.charField = charField;
-            this.shortField = shortField;
-            this.intField = intField;
-            this.longField = longField;
-            this.floatField = floatField;
-            this.doubleField = doubleField;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            PrimitivesDummy that = (PrimitivesDummy) o;
-
-            if (booleanField != that.booleanField) return false;
-            if (byteField != that.byteField) return false;
-            if (charField != that.charField) return false;
-            if (shortField != that.shortField) return false;
-            if (intField != that.intField) return false;
-            if (longField != that.longField) return false;
-            if (Float.compare(that.floatField, floatField) != 0) return false;
-            return Double.compare(that.doubleField, doubleField) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            int result;
-            long temp;
-            result = (booleanField ? 1 : 0);
-            result = 31 * result + (int) byteField;
-            result = 31 * result + (int) charField;
-            result = 31 * result + (int) shortField;
-            result = 31 * result + intField;
-            result = 31 * result + (int) (longField ^ (longField >>> 32));
-            result = 31 * result + (floatField != +0.0f ? Float.floatToIntBits(floatField) : 0);
-            temp = Double.doubleToLongBits(doubleField);
-            result = 31 * result + (int) (temp ^ (temp >>> 32));
-            return result;
-        }
     }
 }
