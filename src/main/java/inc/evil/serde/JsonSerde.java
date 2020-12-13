@@ -14,11 +14,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
-public class JsonSerde {
+class JsonSerde {
     private static final String REFERENCE_TO_OBJECT = "__ref";
     private static final String FIELD_ID = "__idRef";
     private static final Class<?>[][] WRAPPER_TYPES = {
@@ -52,6 +53,7 @@ public class JsonSerde {
         castingFunction.put(Double.class, (value) -> ((Number) value).doubleValue());
         castingFunction.put(AtomicInteger.class, (value) -> new AtomicInteger(((Number) value).intValue()));
         castingFunction.put(AtomicLong.class, (value) -> new AtomicLong(((Number) value).longValue()));
+        castingFunction.put(AtomicBoolean.class, (value) -> new AtomicBoolean(((Boolean) value)));
         castingFunction.put(BigDecimal.class, (value) -> new BigDecimal(value.toString()));
         castingFunction.put(BigInteger.class, (value) -> new BigInteger(value.toString()));
     }
@@ -208,6 +210,8 @@ public class JsonSerde {
             return new TextNode((String) instance);
         } else if (isNumeric(instance)) {
             return serializeNumericValue(instance);
+        } else if (instance instanceof AtomicBoolean) {
+            return BooleanNode.valueOf(((AtomicBoolean) instance).get());
         } else if (instance instanceof Boolean) {
             return BooleanNode.valueOf((Boolean) instance);
         } /*else if (instance instanceof Collection) {
@@ -404,6 +408,8 @@ public class JsonSerde {
                 return deserializeDate(resultingClass, value.asText());
             } else if (value.isNumber() || isBigNumber(resultingClass) || isPrimitiveOrWrapper(resultingClass)) {
                 return castValueTo(getNodeValue(value), resultingClass);
+            } else if (value.isBoolean()) {
+                return getNodeValue(value);
             }
         }
         return null;

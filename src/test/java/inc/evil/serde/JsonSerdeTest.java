@@ -1,7 +1,5 @@
 package inc.evil.serde;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -10,18 +8,19 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
+import static inc.evil.serde.util.TestUtils.assertJsonEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class JsonSerdeTest {
 
     private final JsonSerde jsonSerde = new JsonSerde();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void shouldBeAbleToSerializeToJson_objectWithClassFields() {
@@ -848,49 +847,6 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithAtomicIntegersFields() {
-        AtomicNumbers atomicNumbers = new AtomicNumbers(
-                new AtomicInteger(42),
-                new AtomicLong(66)
-        );
-
-        String actualJson = jsonSerde.serialize(atomicNumbers);
-
-        String expectedJson = """
-                {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$AtomicNumbers",
-                  "state" : {
-                    "atomicInteger" : {"type" : "java.util.concurrent.atomic.AtomicInteger", "value" : 42},
-                    "atomicLong" : {"type" : "java.util.concurrent.atomic.AtomicLong", "value" : 66}
-                  },
-                  "__idRef" : 1
-                }""";
-        assertJsonEquals(expectedJson, actualJson);
-    }
-
-    @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithAtomicIntegersFields() {
-        String json = """
-                {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$AtomicNumbers",
-                  "state" : {
-                    "atomicInteger" : {"type" : "java.util.concurrent.atomic.AtomicInteger", "value" : 42},
-                    "atomicLong" : {"type" : "java.util.concurrent.atomic.AtomicLong", "value" : 66}
-                  },
-                  "__idRef" : 1
-                }""";
-
-        AtomicNumbers actualInstance = jsonSerde.deserialize(json, AtomicNumbers.class);
-
-        AtomicNumbers expectedInstance = new AtomicNumbers(
-                new AtomicInteger(42),
-                new AtomicLong(66)
-        );
-        assertEquals(expectedInstance.atomicInteger.get(), actualInstance.atomicInteger.get());
-        assertEquals(expectedInstance.atomicLong.get(), actualInstance.atomicLong.get());
-    }
-
-    @Test
     public void shouldBeAbleToSerializeToJson_objectWithNullDatesFields() {
         NullDates nullDates = new NullDates(null, null, null);
 
@@ -1324,14 +1280,6 @@ public class JsonSerdeTest {
         assertEquals(expectedInstance, actualInstance);
     }
 
-    private void assertJsonEquals(String expectedJson, String actualJson) {
-        try {
-            assertEquals(objectMapper.readTree(expectedJson), objectMapper.readTree(actualJson));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static class Node<K, V> {
         final int hash;
         final K key;
@@ -1426,14 +1374,6 @@ public class JsonSerdeTest {
     public static class NullWrappers {
         private final Long id;
         private final long age;
-    }
-
-    @AllArgsConstructor
-    @EqualsAndHashCode
-    @ToString
-    public static class AtomicNumbers {
-        private final AtomicInteger atomicInteger;
-        private final AtomicLong atomicLong;
     }
 
     public static class ClashingFieldNames extends Named {
