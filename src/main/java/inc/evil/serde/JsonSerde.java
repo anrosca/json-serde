@@ -3,8 +3,6 @@ package inc.evil.serde;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
-import org.objenesis.Objenesis;
-import org.objenesis.ObjenesisStd;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -62,6 +60,7 @@ class JsonSerde {
     private final Map<String, Object> deserializedInstances = new HashMap<>();
     private final AtomicLong fieldIdGenerator = new AtomicLong();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectFactory objectFactory = new ObjectFactory();
 
     public String serialize(Object instance) {
         return toJson(instance).toPrettyString();
@@ -115,7 +114,7 @@ class JsonSerde {
     }
 
     private JsonNode serializeField(Field field, Object instance) throws Exception {
-        if (/*isCollection(field.getType()) || */isPrimitive(field.getType())) {
+        if (isPrimitive(field.getType())) {
             return serializeValue(field.get(instance));
         } else if (field.getType().isArray()) {
             return serializeArray(field.get(instance));
@@ -199,7 +198,7 @@ class JsonSerde {
     }
 
     private boolean isCollection(Class<?> type) {
-        return Collection.class.isAssignableFrom(type);
+        return type == ArrayList.class || type == HashSet.class;
     }
 
     @SuppressWarnings("unchecked")
@@ -214,9 +213,9 @@ class JsonSerde {
             return BooleanNode.valueOf(((AtomicBoolean) instance).get());
         } else if (instance instanceof Boolean) {
             return BooleanNode.valueOf((Boolean) instance);
-        } /*else if (instance instanceof Collection) {
+        } else if (isCollection(instance.getClass())) {
             return serializeCollection((Collection<Object>) instance);
-        }*/ else if (instance.getClass().isEnum()) {
+        } else if (instance.getClass().isEnum()) {
             return new TextNode(instance.toString());
         } else if (instance.getClass().isArray()) {
             return serializeArray(instance);
@@ -288,7 +287,7 @@ class JsonSerde {
         String resultingClassName = rootNode.get("targetClass").asText();
         String fieldId = rootNode.get(FIELD_ID).asText();
         Class<?> resultingClass = Class.forName(resultingClassName);
-        Object instance = makeInstance(resultingClass);
+        Object instance = objectFactory.makeInstance(resultingClass);
         deserializedInstances.put(fieldId, instance);
         Iterator<Map.Entry<String, JsonNode>> fields = stateNode.fields();
         while (fields.hasNext()) {
@@ -309,12 +308,8 @@ class JsonSerde {
             throw new FieldFieldException("Field " + fieldEntry.getKey() + " was not found present in class " + resultingClass.getName());
         }
         field.setAccessible(true);
-        if (fieldNode.isArray()) {
-            field.set(instance, getCollection((ArrayNode) fieldNode, field.getType()));
-        } else {
-            Object nodeValue = getNodeValue(fieldNode);
-            field.set(instance, castValueTo(nodeValue, field.getType()));
-        }
+        Object nodeValue = getNodeValue(fieldNode);
+        field.set(instance, castValueTo(nodeValue, field.getType()));
     }
 
     private Field getDeclaredField(String fieldName, Class<?> clazz) {
@@ -349,23 +344,6 @@ class JsonSerde {
         if (nodeValue == null)
             return null;
         return castingFunction.getOrDefault(targetType, (value) -> value).apply(nodeValue);
-    }
-
-    private Object makeInstance(Class<?> clazz) {
-        Objenesis objenesis = new ObjenesisStd();
-        return objenesis.newInstance(clazz);
-    }
-
-    private Object getCollection(ArrayNode arrayNode, Class<?> type) throws Exception {
-        if (List.class.isAssignableFrom(type)) {
-            List<Object> resultingList = new ArrayList<>();
-            for (int i = 0; i < arrayNode.size(); ++i) {
-                JsonNode node = arrayNode.get(i);
-                resultingList.add(getValueAs(node, null));
-            }
-            return resultingList;
-        }
-        return null;
     }
 
     private Object getNodeValue(JsonNode fieldNode) throws Exception {
@@ -410,9 +388,26 @@ class JsonSerde {
                 return castValueTo(getNodeValue(value), resultingClass);
             } else if (value.isBoolean()) {
                 return getNodeValue(value);
+            } else if (value.isArray()) {
+                return deserializeCollection(resultingClass, (ArrayNode) value);
             }
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object deserializeCollection(Class<?> resultingClass, ArrayNode arrayNode) throws Exception {
+        if (isCollection(resultingClass)) {
+            Collection<Object> collection = (Collection<Object>) objectFactory.makeInstance(resultingClass);
+            for (int i = 0; i < arrayNode.size(); ++i) {
+                JsonNode currentNode = arrayNode.get(i);
+                Object value = currentNode.isObject() ? deserialize(currentNode.toString(), resultingClass) : getNodeValue(currentNode);
+                collection.add(value);
+            }
+            return collection;
+        } else {
+            return /*deserializeArray(resultingClass, arrayNode)*/ null;
+        }
     }
 
     private boolean isBigNumber(Class<?> resultingClass) {
