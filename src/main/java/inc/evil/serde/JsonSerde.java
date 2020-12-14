@@ -283,7 +283,6 @@ class JsonSerde {
         return instance instanceof Number || instance instanceof Character;
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T deserialize(String json, Class<T> clazz) {
         try {
             if (isNull(json)) {
@@ -413,7 +412,6 @@ class JsonSerde {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     private Object deserializeCollection(Class<?> resultingClass, ArrayNode arrayNode) throws Exception {
         if (isCollection(resultingClass)) {
             return deserializeCommonCollection(resultingClass, arrayNode);

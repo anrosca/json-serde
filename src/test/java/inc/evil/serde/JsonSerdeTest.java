@@ -40,7 +40,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithClassFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithClassFields() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$ClassLiteral",
@@ -57,7 +57,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserialize_objectWithFinalFields() {
+    public void shouldBeAbleFromDeserialize_objectWithFinalFields() {
         String json = """
                 {
                   "targetClass" : "inc.evil.serde.JsonSerdeTest$FinalFields",
@@ -112,7 +112,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithMultidimensionalArraysFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithMultidimensionalArraysFields() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$MultidimensionalArrays",
@@ -317,7 +317,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithArrayOfObjectsFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithArrayOfObjectsFields() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$PojoArrays",
@@ -391,7 +391,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithPrimitiveFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithPrimitiveFields() {
         String json = """
                 {
                   "targetClass" : "inc.evil.serde.JsonSerdeTest$PrimitivesTypes",
@@ -490,7 +490,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithNestedObjects() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithNestedObjects() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$PojoFields",
@@ -524,7 +524,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithEnumFields() {
+    public void shouldBeAbleToSerializeFromJson_objectWithEnumFields() {
         EnumFieldValues dummy = new EnumFieldValues(EnumFieldValues.Season.SPRING, "Mike", null);
 
         String actualJson = jsonSerde.serialize(dummy);
@@ -543,7 +543,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithEnumFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithEnumFields() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$EnumFieldValues",
@@ -589,7 +589,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithCircularDependencies() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithCircularDependencies() {
         String json = """
                 {
                    "targetClass": "inc.evil.serde.JsonSerdeTest$CircularInstance1",
@@ -659,7 +659,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithListFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithListFields() {
         String json = """
                 {
                    "targetClass": "inc.evil.serde.JsonSerdeTest$ListOfStrings",
@@ -686,7 +686,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithStringFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithStringFields() {
         String json = """
                 {
                   "targetClass" : "inc.evil.serde.JsonSerdeTest$StringFields",
@@ -727,7 +727,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectsWithSuperclasses() {
+    public void shouldBeAbleToDeserializeFromJson_objectsWithSuperclasses() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$InheritedFields",
@@ -763,7 +763,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithObjectFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithObjectFields() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$UpcastToObject",
@@ -805,7 +805,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithDateFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithDateFields() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$Dates",
@@ -866,7 +866,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithNullDatesFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithNullDatesFields() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$NullDates",
@@ -885,7 +885,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithBigNumbersFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithBigNumbersFields() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$BigNumbers",
@@ -960,7 +960,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithPeriodsAndDurationFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithPeriodsAndDurationFields() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$PeriodsAndDurations",
@@ -999,7 +999,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithNullArraysFields() {
+    public void shouldBeAbleToDeserializFromJson_objectWithNullArraysFields() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$NullArrays",
@@ -1034,7 +1034,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithNullInterfaceFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithNullInterfaceFields() {
         String json = """
                 {
                     "targetClass": "inc.evil.serde.JsonSerdeTest$NullInterfaceFields",
@@ -1069,7 +1069,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectWithNullFieldsOfTypeClass() {
+    public void shouldBeAbleToDeserializeFromJson_objectWithNullFieldsOfTypeClass() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$NullClassFields",
@@ -1126,7 +1126,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectsWithObjectArraysFields() {
+    public void shouldBeAbleToDeserializeFromJson_objectsWithObjectArraysFields() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$ObjectArrays",
@@ -1192,7 +1192,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_objectsWithClashingFieldNames() {
+    public void shouldBeAbleToDeserializeFromJson_objectsWithClashingFieldNames() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$ClashingFieldNames",
@@ -1250,7 +1250,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeToJson_genericObject() {
+    public void shouldBeAbleToDeserializeFromJson_genericObject() {
         String json = """
                 {
                   "targetClass": "inc.evil.serde.JsonSerdeTest$Node",

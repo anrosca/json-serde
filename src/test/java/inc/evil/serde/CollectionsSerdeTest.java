@@ -1,6 +1,5 @@
-package inc;
+package inc.evil.serde;
 
-import inc.evil.serde.JsonMapper;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -28,13 +27,13 @@ public class CollectionsSerdeTest {
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.CollectionsSerdeTest$ArrayListFields",
+                  "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
                   "state": {
                     "strings": {
                       "type": "java.util.ArrayList",
                       "value": [
                         {
-                          "targetClass": "inc.CollectionsSerdeTest$User",
+                          "targetClass": "inc.evil.serde.CollectionsSerdeTest$User",
                           "state": {
                             "name": {"type": "java.lang.String", "value": "Mike"}
                           },
@@ -52,13 +51,13 @@ public class CollectionsSerdeTest {
     public void shouldBeAbleToDeserializeFromJson_ArrayListFields() {
         String json = """
                 {
-                  "targetClass": "inc.CollectionsSerdeTest$ArrayListFields",
+                  "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
                   "state": {
                     "strings": {
                       "type": "java.util.ArrayList",
                       "value": [
                         {
-                          "targetClass": "inc.CollectionsSerdeTest$User",
+                          "targetClass": "inc.evil.serde.CollectionsSerdeTest$User",
                           "state": {
                             "name": {"type": "java.lang.String", "value": "Mike"}
                           },
@@ -86,7 +85,7 @@ public class CollectionsSerdeTest {
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.CollectionsSerdeTest$ArrayListFields",
+                  "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
                   "state": {
                     "strings": {"type": "java.util.ArrayList", "value": []}
                   },
@@ -99,7 +98,7 @@ public class CollectionsSerdeTest {
     public void shouldBeAbleToDeserializeFromJson_emptyArrayListFields() {
         String json = """
                 {
-                  "targetClass": "inc.CollectionsSerdeTest$ArrayListFields",
+                  "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
                   "state": {
                     "strings": {"type": "java.util.ArrayList", "value": []}
                   },
@@ -122,13 +121,13 @@ public class CollectionsSerdeTest {
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.CollectionsSerdeTest$HashSetFields",
+                  "targetClass": "inc.evil.serde.CollectionsSerdeTest$HashSetFields",
                   "state": {
                     "strings": {
                       "type": "java.util.HashSet",
                       "value": [
                         {
-                          "targetClass": "inc.CollectionsSerdeTest$User",
+                          "targetClass": "inc.evil.serde.CollectionsSerdeTest$User",
                           "state": {
                             "name": {"type": "java.lang.String", "value": "Mike"}
                           },
@@ -146,13 +145,13 @@ public class CollectionsSerdeTest {
     public void shouldBeAbleToDeserializeFromJson_HashSetFields() {
         String json = """
                 {
-                  "targetClass": "inc.CollectionsSerdeTest$HashSetFields",
+                  "targetClass": "inc.evil.serde.CollectionsSerdeTest$HashSetFields",
                   "state": {
                     "strings": {
                       "type": "java.util.HashSet",
                       "value": [
                         {
-                          "targetClass": "inc.CollectionsSerdeTest$User",
+                          "targetClass": "inc.evil.serde.CollectionsSerdeTest$User",
                           "state": {
                             "name": {"type": "java.lang.String", "value": "Mike"}
                           },
