@@ -32,6 +32,9 @@ public class BooleanSerde implements SerializerDeserializer {
 
     @Override
     public Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception {
+        if (resultingClass == AtomicBoolean.class) {
+            return new AtomicBoolean(node.asBoolean());
+        }
         return node.asBoolean();
     }
 }
