@@ -5,14 +5,19 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import inc.evil.serde.SerializerDeserializer;
 
 public class StringSerde implements SerializerDeserializer {
+
     @Override
     public JsonNode serialize(Object instance) {
-        return new TextNode((String) instance);
+        if (instance instanceof CharSequence) {
+            return new TextNode(instance.toString());
+        }
+        throw new IllegalArgumentException(instance.getClass().getName() +
+                                           " can't be serialized by " + getClass().getName());
     }
 
     @Override
     public boolean canConsume(Class<?> clazz) {
-        return clazz == String.class;
+        return clazz == String.class || clazz == StringBuilder.class || clazz == StringBuffer.class;
     }
 
     @Override
@@ -27,6 +32,16 @@ public class StringSerde implements SerializerDeserializer {
 
     @Override
     public Object deserialize(Class<?> resultingClass, JsonNode value) throws Exception {
-        return value.asText().equals("null") ? null : value.asText();
+        String resultingString = value.asText().equals("null") ? null : value.asText();
+        return castTo(resultingClass, resultingString);
+    }
+
+    private Object castTo(Class<?> resultingClass, String string) {
+        if (resultingClass == StringBuilder.class) {
+            return new StringBuilder(string);
+        } else if (resultingClass == StringBuffer.class) {
+            return new StringBuffer(string);
+        }
+        return string;
     }
 }
