@@ -53,8 +53,13 @@ class JsonSerde implements SerdeContext {
             }
             return trySerializeToJson(instance);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw doThrow(e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    static <E extends Exception> E doThrow(Exception e) throws E {
+        throw (E) e;
     }
 
     private ObjectNode getPreviouslySerializedInstance(Object instance) {
@@ -137,7 +142,7 @@ class JsonSerde implements SerdeContext {
             }
             return tryDeserialize(json);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw doThrow(e);
         }
     }
 

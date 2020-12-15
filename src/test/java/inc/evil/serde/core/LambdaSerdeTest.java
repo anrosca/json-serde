@@ -1,4 +1,4 @@
-package inc.evil.serde.util;
+package inc.evil.serde.core;
 
 import inc.evil.serde.JsonMapper;
 import org.junit.jupiter.api.Test;
@@ -27,23 +27,25 @@ public class LambdaSerdeTest {
     public void shouldBeAbleToDeserializeFromJson_objectWithSerializableLambdaFields() {
         String json = """
                 {
-                  "targetClass": "inc.evil.serde.util.LambdaSerdeTest$Lambdas",
+                  "targetClass": "inc.evil.serde.core.LambdaSerdeTest$Lambdas",
+                  "__id": 1,
                   "state": {
                     "age": 42,
                     "intConsumer": {
-                      "type": "inc.evil.serde.util.LambdaSerdeTest$$Lambda$364/0x0000000800c6f9e0",
+                      "type": "inc.evil.serde.core.LambdaSerdeTest$$Lambda$299/0x0000000800c10040",
                       "value": {
                         "type": "java.lang.invoke.SerializedLambda",
                         "value": {
                           "targetClass": "java.lang.invoke.SerializedLambda",
+                          "__id": 2,
                           "state": {
                             "capturingClass": {
                               "type": "java.lang.Class",
-                              "value": "inc.evil.serde.util.LambdaSerdeTest"
+                              "value": "inc.evil.serde.core.LambdaSerdeTest"
                             },
                             "functionalInterfaceClass": {
                               "type": "java.lang.String",
-                              "value": "inc/evil/serde/util/LambdaSerdeTest$IntConsumer"
+                              "value": "inc/evil/serde/core/LambdaSerdeTest$IntConsumer"
                             },
                             "functionalInterfaceMethodName": {
                               "type": "java.lang.String",
@@ -55,11 +57,11 @@ public class LambdaSerdeTest {
                             },
                             "implClass": {
                               "type": "java.lang.String",
-                              "value": "inc/evil/serde/util/LambdaSerdeTest"
+                              "value": "inc/evil/serde/core/LambdaSerdeTest"
                             },
                             "implMethodName": {
                               "type": "java.lang.String",
-                              "value": "lambda$shouldBeAbleToSerializeToJson_objectWithSerializableLambdaFields$352a8b7e$1"
+                              "value": "lambda$shouldBeAbleToSerializeToJson_objectWithSerializableLambdaFields$6183a01$1"
                             },
                             "implMethodSignature": {
                               "type": "java.lang.String",
@@ -74,15 +76,12 @@ public class LambdaSerdeTest {
                               "type": "[Ljava.lang.Object;",
                               "value": []
                             }
-                          },
-                          "__id": 2
+                          }
                         }
                       }
                     }
-                  },
-                  "__id": 1
+                  }
                 }""";
-
 
         Lambdas actualInstance = jsonMapper.deserialize(json, Lambdas.class);
 

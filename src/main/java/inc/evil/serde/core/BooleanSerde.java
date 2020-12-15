@@ -11,8 +11,11 @@ public class BooleanSerde implements SerializerDeserializer {
     public JsonNode serialize(Object instance) {
         if (instance instanceof Boolean) {
             return BooleanNode.valueOf((Boolean) instance);
+        } else if (instance instanceof AtomicBoolean) {
+            return BooleanNode.valueOf(((AtomicBoolean) instance).get());
         }
-        return BooleanNode.valueOf(((AtomicBoolean) instance).get());
+        throw new IllegalArgumentException(instance.getClass().getName() +
+                                           " can't be serialized by " + getClass().getCanonicalName());
     }
 
     @Override

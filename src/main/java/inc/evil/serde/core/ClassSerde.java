@@ -7,7 +7,10 @@ import inc.evil.serde.SerializerDeserializer;
 public class ClassSerde implements SerializerDeserializer {
     @Override
     public JsonNode serialize(Object instance) {
-        return new TextNode(((Class<?>) instance).getName());
+        if (instance instanceof Class) {
+            return new TextNode(((Class<?>) instance).getName());
+        }
+        throw new IllegalArgumentException(instance.getClass().getName() + " can't be serialized by " + getClass().getName());
     }
 
     @Override
