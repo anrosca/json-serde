@@ -1,13 +1,13 @@
 package inc.evil.serde.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.*;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.FloatNode;
+import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.LongNode;
 import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
 import inc.evil.serde.util.ValueCastUtil;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
 public class NumericSerde implements SerializerDeserializer {
     private static final Class<?>[][] NUMERIC_WRAPPER_TYPES = {
@@ -29,11 +29,7 @@ public class NumericSerde implements SerializerDeserializer {
 
     @Override
     public JsonNode serialize(Object instance) {
-        if (instance instanceof BigDecimal) {
-            return new TextNode(instance.toString());
-        } else if (instance instanceof BigInteger) {
-            return new TextNode((instance.toString()));
-        } else if (instance instanceof Double) {
+        if (instance instanceof Double) {
             return new DoubleNode((Double) instance);
         } else if (instance instanceof Float) {
             return new FloatNode((Float) instance);
@@ -49,7 +45,7 @@ public class NumericSerde implements SerializerDeserializer {
 
     @Override
     public boolean canConsume(Class<?> clazz) {
-        return hasSuperclass(clazz, Number.class) || hasSuperclass(clazz, Character.class) || isPrimitiveOrWrapper(clazz);
+        return hasSuperclass(clazz, Character.class) || isPrimitiveOrWrapper(clazz);
     }
 
     @Override

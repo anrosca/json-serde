@@ -1,12 +1,8 @@
 package inc.evil.serde.util;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 public class ValueCastUtil {
@@ -29,11 +25,7 @@ public class ValueCastUtil {
         CASTING_FUNCTION.put(Float.class, (value) -> ((Number) value).floatValue());
         CASTING_FUNCTION.put(double.class, (value) -> ((Number) value).doubleValue());
         CASTING_FUNCTION.put(Double.class, (value) -> ((Number) value).doubleValue());
-        CASTING_FUNCTION.put(AtomicInteger.class, (value) -> new AtomicInteger(((Number) value).intValue()));
-        CASTING_FUNCTION.put(AtomicLong.class, (value) -> new AtomicLong(((Number) value).longValue()));
         CASTING_FUNCTION.put(AtomicBoolean.class, (value) -> new AtomicBoolean(((Boolean) value)));
-        CASTING_FUNCTION.put(BigDecimal.class, (value) -> new BigDecimal(value.toString()));
-        CASTING_FUNCTION.put(BigInteger.class, (value) -> new BigInteger(value.toString()));
     }
 
     public Object castValueTo(Object instance, Class<?> targetType) {
