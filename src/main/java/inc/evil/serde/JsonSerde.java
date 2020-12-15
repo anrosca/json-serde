@@ -31,6 +31,8 @@ class JsonSerde implements SerdeContext {
             new CommonCollectionSerde(this),
             new CommonDateSerde(this),
             new ClassSerde(),
+            new AtomicNumbersSerde(),
+            new BigNumbersSerde(),
             new EnumSerde(),
             new StringSerde(),
             new NumericSerde(this),
