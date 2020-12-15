@@ -14,6 +14,7 @@
         <objenesis.version>3.1</objenesis.version>
         <lombok.version>1.18.16</lombok.version>
         <junit.version>5.7.0</junit.version>
+        <surefile.plugin.version>2.22.2</surefile.plugin.version>
     </properties>
 
     <dependencies>
@@ -51,6 +52,14 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefile.plugin.version}</version>
+                <configuration>
+                    <argLine>--enable-preview</argLine>
                 </configuration>
             </plugin>
         </plugins>
