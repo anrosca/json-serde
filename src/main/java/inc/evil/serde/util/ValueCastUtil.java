@@ -2,7 +2,6 @@ package inc.evil.serde.util;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 public class ValueCastUtil {
@@ -25,7 +24,6 @@ public class ValueCastUtil {
         CASTING_FUNCTION.put(Float.class, (value) -> ((Number) value).floatValue());
         CASTING_FUNCTION.put(double.class, (value) -> ((Number) value).doubleValue());
         CASTING_FUNCTION.put(Double.class, (value) -> ((Number) value).doubleValue());
-        CASTING_FUNCTION.put(AtomicBoolean.class, (value) -> new AtomicBoolean(((Boolean) value)));
     }
 
     public Object castValueTo(Object instance, Class<?> targetType) {

@@ -2,18 +2,22 @@ package inc.evil.serde.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
 
 import java.lang.reflect.Method;
 import java.time.*;
+import java.util.Arrays;
 
 public class CommonDateSerde implements SerializerDeserializer {
-    private final SerdeContext serdeContext;
-
-    public CommonDateSerde(SerdeContext serdeContext) {
-        this.serdeContext = serdeContext;
-    }
+    private static final Class<?>[] SUPPORTED_DATE_TYPES = {
+            LocalDateTime.class,
+            LocalDate.class,
+            OffsetDateTime.class,
+            ZonedDateTime.class,
+            Instant.class,
+            Period.class,
+            Duration.class
+    };
 
     @Override
     public JsonNode serialize(Object instance) {
@@ -22,9 +26,8 @@ public class CommonDateSerde implements SerializerDeserializer {
 
     @Override
     public boolean canConsume(Class<?> clazz) {
-        return clazz == LocalDateTime.class || clazz == LocalDate.class ||
-               clazz == OffsetDateTime.class || clazz == ZonedDateTime.class ||
-               clazz == Period.class || clazz == Duration.class;
+        return Arrays.stream(SUPPORTED_DATE_TYPES)
+                .anyMatch(supportedClass -> supportedClass == clazz);
     }
 
     @Override

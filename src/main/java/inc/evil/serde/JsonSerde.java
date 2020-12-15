@@ -29,7 +29,7 @@ class JsonSerde implements SerdeContext {
             new ArraySerde(this, List.of(new CommonMapSerde(this), new CommonCollectionSerde(this))),
             new CommonMapSerde(this),
             new CommonCollectionSerde(this),
-            new CommonDateSerde(this),
+            new CommonDateSerde(),
             new ClassSerde(),
             new AtomicNumbersSerde(),
             new BigNumbersSerde(),
@@ -71,26 +71,34 @@ class JsonSerde implements SerdeContext {
 
     private ObjectNode trySerializeToJson(Object instance) throws Exception {
         ObjectNode rootNode = new ObjectNode(JsonNodeFactory.instance);
-        ObjectNode stateNode = new ObjectNode(JsonNodeFactory.instance);
         rootNode.set("targetClass", new TextNode(instance.getClass().getName()));
-        rootNode.set("state", stateNode);
         rootNode.set(FIELD_ID, new LongNode(fieldIdGenerator.incrementAndGet()));
         Class<?> instanceClass = instance.getClass();
         if (!wasSerialized(instance)) {
             serializedInstances.put(instance, rootNode);
         }
+        rootNode.set("state", serializeFieldsOf(instance, instanceClass));
+        return rootNode;
+    }
+
+    private ObjectNode serializeFieldsOf(Object instance, Class<?> instanceClass) throws Exception {
+        ObjectNode stateNode = new ObjectNode(JsonNodeFactory.instance);
         boolean shouldQualifyFieldNames = shouldQualifyFieldNamesFor(instanceClass);
         do {
-            for (Field field : instanceClass.getDeclaredFields()) {
-                field.setAccessible(true);
-                int fieldModifiers = field.getModifiers();
-                if (Modifier.isStatic(fieldModifiers)) {
-                    continue;
-                }
-                stateNode.set(makeFieldName(field, shouldQualifyFieldNames), serializeField(field, instance));
-            }
+            processFieldsFor(instance, stateNode, instanceClass, shouldQualifyFieldNames);
         } while ((instanceClass = instanceClass.getSuperclass()) != null);
-        return rootNode;
+        return stateNode;
+    }
+
+    private void processFieldsFor(Object instance, ObjectNode stateNode, Class<?> instanceClass, boolean shouldQualifyFieldNames) throws Exception {
+        for (Field field : instanceClass.getDeclaredFields()) {
+            field.setAccessible(true);
+            int fieldModifiers = field.getModifiers();
+            if (Modifier.isStatic(fieldModifiers)) {
+                continue;
+            }
+            stateNode.set(makeFieldName(field, shouldQualifyFieldNames), serializeField(field, instance));
+        }
     }
 
     private JsonNode serializeField(Field field, Object instance) throws Exception {
