@@ -7,12 +7,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JsonMapperTest {
 
     private final JsonMapper jsonMapper = new JsonMapper();
+
+    @Test
+    public void shouldBeAbleToDeserializeNullsFromJson() {
+        ArrayList<Object> deserializedInstance = jsonMapper.deserialize("null", ArrayList.class);
+
+        assertNull(deserializedInstance);
+    }
 
     @Test
     public void shouldBeAbleToSerializeAndDeserializeToJson_Maps() {
@@ -20,7 +26,6 @@ public class JsonMapperTest {
         assertThatMapDoesNotBreak(new HashMap<>());
         assertThatMapDoesNotBreak(new TreeMap<>());
         assertThatMapDoesNotBreak(new LinkedHashMap<>());
-        assertThatMapDoesNotBreak(new WeakHashMap<>());
         assertThatMapDoesNotBreak(Collections.synchronizedMap(new HashMap<>()));
         assertThatMapDoesNotBreak(Collections.synchronizedMap(new TreeMap<>()));
     }
