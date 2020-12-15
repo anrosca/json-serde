@@ -10,15 +10,14 @@ import inc.evil.serde.SerializerDeserializer;
 import inc.evil.serde.util.ValueCastUtil;
 
 public class NumericSerde implements SerializerDeserializer {
-    private static final Class<?>[][] NUMERIC_WRAPPER_TYPES = {
-//            {Boolean.class, boolean.class},
-            {Byte.class, byte.class},
-            {Character.class, char.class},
-            {Short.class, short.class},
-            {Integer.class, int.class},
-            {Long.class, long.class},
-            {Float.class, float.class},
-            {Double.class, double.class},
+    private static final Class<?>[] NUMERIC_WRAPPER_TYPES = {
+            Byte.class,
+            Character.class,
+            Short.class,
+            Integer.class,
+            Long.class,
+            Float.class,
+            Double.class
     };
 
     private final SerdeContext serdeContext;
@@ -64,8 +63,8 @@ public class NumericSerde implements SerializerDeserializer {
     }
 
     private boolean isPrimitiveOrWrapper(Class<?> clazz) {
-        for (Class<?>[] wrapperType : NUMERIC_WRAPPER_TYPES) {
-            if (clazz == wrapperType[0] || clazz == wrapperType[1]) {
+        for (Class<?> wrapperType : NUMERIC_WRAPPER_TYPES) {
+            if (clazz == wrapperType) {
                 return true;
             }
         }
