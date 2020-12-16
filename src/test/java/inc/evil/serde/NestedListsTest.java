@@ -1,6 +1,5 @@
-package inc.evil.serde.core;
+package inc.evil.serde;
 
-import inc.evil.serde.JsonMapper;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

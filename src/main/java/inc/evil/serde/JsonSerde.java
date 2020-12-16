@@ -14,7 +14,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class JsonSerde implements SerdeContext {
+class JsonSerde implements SerdeContext {
     private static final String REFERENCE_TO_OBJECT = "__ref";
     private static final String FIELD_ID = "__id";
 
@@ -33,7 +33,7 @@ public class JsonSerde implements SerdeContext {
             new ClassSerde(),
             new AtomicNumbersSerde(),
             new BigNumbersSerde(),
-            new EnumSerde(this),
+            new EnumSerde(),
             new StringSerde(),
             new NumericSerde(this),
             new BooleanSerde(),

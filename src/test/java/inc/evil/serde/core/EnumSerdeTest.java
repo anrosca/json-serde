@@ -5,13 +5,12 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import inc.evil.serde.JsonSerde;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EnumSerdeTest {
-    private final EnumSerde enumSerde = new EnumSerde(new JsonSerde());
+    private final EnumSerde enumSerde = new EnumSerde();
 
     enum Seasons {SPRING, SUMMER, AUTUMN, WINTER}
 
