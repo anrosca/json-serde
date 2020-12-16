@@ -1,0 +1,21 @@
+{
+  "targetClass": "inc.evil.serde.CollectionsSerdeTest$HashSetFields",
+  "__id": 1,
+  "state": {
+    "strings": {
+      "type": "java.util.HashSet",
+      "value": {
+        "type": "java.util.HashSet",
+        "value": [
+          {
+            "targetClass": "inc.evil.serde.CollectionsSerdeTest$User",
+            "__id": 2,
+            "state": {
+              "name": {"type": "java.lang.String", "value": "Mike"}
+            }
+          }
+        ]
+      }
+    }
+  }
+}

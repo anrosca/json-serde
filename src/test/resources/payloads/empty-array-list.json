@@ -1,0 +1,13 @@
+{
+  "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
+  "__id": 1,
+  "state": {
+    "strings": {
+      "type": "java.util.ArrayList",
+      "value": {
+        "type": "java.util.ArrayList",
+        "value": []
+      }
+    }
+  }
+}

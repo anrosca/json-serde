@@ -23,10 +23,10 @@ class JsonSerde implements SerdeContext {
     private final AtomicLong fieldIdGenerator = new AtomicLong();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ObjectFactory objectFactory = new ObjectFactory();
-    private final List<SerializerDeserializer> serializerDeserializers = List.of(
+    private final List<SerializerDeserializer> serializerDeserializers = Arrays.asList(
             new NullSerde(),
             new PrimitiveTypeSerde(this),
-            new ArraySerde(this, List.of(new CommonMapSerde(this), new CommonCollectionSerde(this))),
+            new ArraySerde(this, Arrays.asList(new CommonMapSerde(this), new CommonCollectionSerde(this))),
             new CommonMapSerde(this),
             new CommonCollectionSerde(this),
             new CommonDateSerde(),

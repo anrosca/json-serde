@@ -1,0 +1,38 @@
+{
+  "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
+  "__id": 1,
+  "state": {
+    "users": {
+      "type": "java.util.HashMap",
+      "value": {
+        "type": "java.util.HashMap",
+        "value": [
+          {
+            "key": "Mike",
+            "value": {
+              "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+              "__id": 2,
+              "state": {
+                "name": {"type": "java.lang.String", "value": "Mike"}
+              }
+            }
+          },
+          {
+            "key": "John",
+            "value": {
+              "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+              "__id": 3,
+              "state": {
+                "name": {"type": "java.lang.String", "value": "John"}
+              }
+            }
+          }
+        ]
+      }
+    },
+    "moreUsers": {
+      "type": "java.util.Map",
+      "value": null
+    }
+  }
+}
