@@ -4,17 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
 
 import java.lang.reflect.Method;
 
 public class EnumSerde implements SerializerDeserializer {
-    private final SerdeContext serdeContext;
-
-    public EnumSerde(SerdeContext serdeContext) {
-        this.serdeContext = serdeContext;
-    }
 
     @Override
     public JsonNode serialize(Object instance) {
@@ -34,8 +28,10 @@ public class EnumSerde implements SerializerDeserializer {
 
     @Override
     public Object deserialize(Class<?> enumClass, JsonNode node) throws Exception {
-        if (!node.isTextual()) {
-            return serdeContext.getNodeValue(node);
+        if (node.isObject()) {
+            String className = node.get("type").asText();
+            JsonNode enumValue = node.get("value");
+            return deserialize(Class.forName(className), enumValue);
         }
         String enumValue = node.asText();
         if (enumValue == null || enumValue.equals("null")) {
