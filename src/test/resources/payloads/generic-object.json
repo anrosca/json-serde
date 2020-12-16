@@ -1,0 +1,20 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$Node",
+  "state": {"hash": 222, "key": {"type": "java.lang.String", "value": "Mike"},
+    "val": {"type": "java.lang.Integer", "value": 42},
+    "next": {
+      "type": "inc.evil.serde.JsonSerdeTest$Node",
+      "value": {
+        "targetClass": "inc.evil.serde.JsonSerdeTest$Node",
+        "state": {
+          "hash": 333,
+          "key": {"type": "java.lang.String", "value": "Dennis"},
+          "val": {"type": "java.lang.Integer", "value": 45},
+          "next": {"type": "inc.evil.serde.JsonSerdeTest$Node", "value": null}
+        },
+        "__id": 2
+      }
+    }
+  },
+  "__id": 1
+}

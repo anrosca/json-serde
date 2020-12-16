@@ -1,0 +1,31 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoArrays",
+  "state": {
+    "strings": {
+      "type": "[Linc.evil.serde.JsonSerdeTest$StringFields;",
+      "value": [
+        {
+          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
+          "value": {
+            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
+            "state": {
+              "firstName": {"type": "java.lang.String", "value": "Mike"},
+              "lastName": {"type": "java.lang.String", "value": "Smith"}},
+            "__id": 2
+          }
+        },
+        {
+          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
+          "value": {
+            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
+            "state": {
+              "firstName": {"type": "java.lang.String", "value": "Dennis"},
+              "lastName": {"type": "java.lang.String", "value": "Ritchie"}},
+            "__id": 3
+          }
+        }
+      ]
+    }
+  },
+  "__id": 1
+}

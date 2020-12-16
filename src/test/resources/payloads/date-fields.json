@@ -1,0 +1,10 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$Dates",
+  "state": {
+    "localDate": {"type": "java.time.LocalDate", "value": "2020-12-25"},
+    "localDateTime": {"type": "java.time.LocalDateTime", "value": "2020-11-21T17:25:59"},
+    "offsetDateTime": {"type": "java.time.OffsetDateTime", "value": "2021-05-02T14:40:50.000000003Z"},
+    "zonedDateTime": {"type": "java.time.ZonedDateTime", "value": "2020-11-23T13:14:45+01:00[Europe/Paris]"}
+  },
+  "__id": 1
+}

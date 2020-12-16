@@ -4,9 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <name>JSON SERDE</name>
+    <description>Json serialization/deserialization library which can serialize to json
+        complex object graphs (with cyclic dependencies) without imposing restrictions on objects
+        from that graph (like to have getters and setters or a default constructor)</description>
+
+    <groupId>com.github.anrosca</groupId>
     <artifactId>json-serde</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
 
     <properties>
         <java.version>15</java.version>
@@ -119,7 +124,7 @@
         <developer>
             <id>anrosca</id>
             <name>Andrei Roșca</name>
-            <email>andrei.rosca.1994@gmail.com</email>
+            <email>rosca.andrei.1994@gmail.com</email>
         </developer>
     </developers>
 </project>

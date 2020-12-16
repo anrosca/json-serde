@@ -1,0 +1,14 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$FinalFields",
+  "state": {
+    "firstName": {
+      "type": "java.lang.String",
+      "value": "Mike"
+    },
+    "lastName": {
+      "type": "java.lang.String",
+      "value": "Smith"
+    }
+  },
+  "__id": 1
+}

@@ -1,0 +1,21 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$CircularInstance1",
+  "state": {
+    "circularInstance2": {
+      "type": "inc.evil.serde.JsonSerdeTest$CircularInstance2",
+      "value": {
+        "targetClass": "inc.evil.serde.JsonSerdeTest$CircularInstance2",
+        "state": {
+          "circularInstance1": {
+            "type": "inc.evil.serde.JsonSerdeTest$CircularInstance1",
+            "value": {"type": "__ref", "value": "1"}
+          },
+          "name": {"type": "java.lang.String", "value": "Mike"}
+        },
+        "__id": 2
+      }
+    },
+    "age": 42
+  },
+  "__id": 1
+}

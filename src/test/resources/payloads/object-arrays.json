@@ -1,0 +1,25 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$ObjectArrays",
+  "state": {
+    "objects": {
+      "type": "[Ljava.lang.Object;",
+      "value": [
+        {"type": "java.lang.Class", "value": "java.lang.Override"},
+        {"type": "java.lang.String", "value": "Mike"},
+        {"type": "java.lang.Integer", "value": 42},
+        {
+          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
+          "value": {
+            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
+            "state": {
+              "firstName": {"type": "java.lang.String", "value": "John"},
+              "lastName": {"type": "java.lang.String", "value": "Doe"}
+            },
+            "__id": 2
+          }
+        }
+      ]
+    }
+  },
+  "__id": 1
+}

@@ -1,0 +1,8 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$InheritedFields",
+  "state": {
+    "age": 29,
+    "name": {"type": "java.lang.String", "value": "Mike"}
+  },
+  "__id": 1
+}

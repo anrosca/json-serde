@@ -1,0 +1,14 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$PrimitiveArrays",
+  "state": {
+    "booleanArray": {"type": "[Z", "value": [true, false]},
+    "byteArray":    {"type": "[B","value": [1]},
+    "charArray":    {"type": "[C","value": [13]},
+    "shortArray":   {"type": "[S","value": [2]},
+    "intArray":     {"type": "[I","value": [4]},
+    "longArray":    {"type": "[J","value": [5]},
+    "floatArray":   {"type": "[F", "value": [6.5]},
+    "doubleArray":  {"type": "[D","value": [7.5]}
+  },
+  "__id": 1
+}

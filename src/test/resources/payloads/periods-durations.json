@@ -1,0 +1,8 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$PeriodsAndDurations",
+  "state": {
+    "period": {"type": "java.time.Period", "value": "P1D"},
+    "duration": {"type": "java.time.Duration", "value": "PT2M"}
+  },
+  "__id": 1
+}
