@@ -1,55 +1,39 @@
 package inc.evil.serde;
 
+import inc.evil.serde.extension.JsonFile;
+import inc.evil.serde.extension.JsonFileParameterSupplier;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static inc.evil.serde.util.TestUtils.assertJsonEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@ExtendWith(JsonFileParameterSupplier.class)
 public class JsonSerdeTest {
 
     private final JsonSerde jsonSerde = new JsonSerde();
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithClassFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithClassFields(@JsonFile("/payloads/class-literals.json") String expectedJson) {
         ClassLiteral literal = new ClassLiteral(ArrayList.class);
 
         String actualJson = jsonSerde.serialize(literal);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$ClassLiteral",
-                  "state": {
-                    "targetClass": {"type": "java.lang.Class", "value": "java.util.ArrayList"}
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithClassFields() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$ClassLiteral",
-                  "state": {
-                    "targetClass": {"type": "java.lang.Class", "value": "java.util.ArrayList"}
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithClassFields(@JsonFile("/payloads/class-literals.json") String json) {
         ClassLiteral actualInstance = jsonSerde.deserialize(json, ClassLiteral.class);
 
         ClassLiteral expectedInstance = new ClassLiteral(ArrayList.class);
@@ -57,30 +41,15 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleFromDeserialize_objectWithFinalFields() {
-        String json = """
-                {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$FinalFields",
-                  "state" : {
-                    "firstName" : {
-                      "type" : "java.lang.String",
-                      "value" : "Mike"
-                    },
-                    "lastName" : {
-                      "type" : "java.lang.String",
-                      "value" : "Smith"
-                    }
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleFromDeserialize_objectWithFinalFields(@JsonFile("/payloads/final-dto-field.json") String json) {
         FinalFields actualInstance = jsonSerde.deserialize(json, FinalFields.class);
 
         assertEquals(new FinalFields("Mike", "Smith"), actualInstance);
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithMultidimensionalArraysFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithMultidimensionalArraysFields(
+            @JsonFile("/payloads/multidimensional-primitive-array.json") String expectedJson) {
         MultidimensionalArrays arrays = new MultidimensionalArrays(
                 new boolean[][]{
                         new boolean[]{false, true},
@@ -92,44 +61,12 @@ public class JsonSerdeTest {
 
         String actualJson = jsonSerde.serialize(arrays);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$MultidimensionalArrays",
-                  "state": {
-                    "booleans": {
-                      "type": "[[Z",
-                      "value": [
-                        {"type": "[Z", "value": [false, true]},
-                        {"type": "[Z", "value": [true, false, true]},
-                        {"type": "[Z", "value": [true, true]},
-                        {"type": "[Z", "value": [true, false, false, true]}
-                      ]
-                    }
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithMultidimensionalArraysFields() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$MultidimensionalArrays",
-                  "state": {
-                    "booleans": {
-                      "type": "[[Z",
-                      "value": [
-                        {"type": "[Z", "value": [false, true]},
-                        {"type": "[Z", "value": [true, false, true]},
-                        {"type": "[Z", "value": [true, true]},
-                        {"type": "[Z", "value": [true, false, false, true]}
-                      ]
-                    }
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithMultidimensionalArraysFields(
+            @JsonFile("/payloads/multidimensional-primitive-array.json") String json) {
         MultidimensionalArrays actualInstance = jsonSerde.deserialize(json, MultidimensionalArrays.class);
 
         MultidimensionalArrays expectedInstance = new MultidimensionalArrays(
@@ -144,36 +81,24 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerialize_objectWithNoFields() {
+    public void shouldBeAbleToSerialize_objectWithNoFields(@JsonFile("/payloads/no-fields.json") String expectedJson) {
         NoFields noFields = new NoFields();
 
         String actualJson = jsonSerde.serialize(noFields);
 
-        String expectedJson = """
-                {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$NoFields",
-                  "state" : { },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserialize_objectWithNoFields() {
-        String json = """
-                {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$NoFields",
-                  "state" : { },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserialize_objectWithNoFields(@JsonFile("/payloads/no-fields.json") String json) {
         NoFields actualInstance = jsonSerde.deserialize(json, NoFields.class);
 
         assertNotNull(actualInstance);
+        assertEquals(NoFields.class, actualInstance.getClass());
     }
 
     @Test
-    public void shouldBeAbleToSerialize_objectWithPrimitiveArraysFields() {
+    public void shouldBeAbleToSerialize_objectWithPrimitiveArraysFields(@JsonFile("/payloads/primitive-arrays.json") String expectedJson) {
         PrimitiveArrays dummy = new PrimitiveArrays(
                 new boolean[]{true, false},
                 new byte[]{1},
@@ -187,42 +112,11 @@ public class JsonSerdeTest {
 
         String actualJson = jsonSerde.serialize(dummy);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PrimitiveArrays",
-                  "state": {
-                    "booleanArray": {"type": "[Z", "value": [true, false]},
-                    "byteArray":    {"type": "[B","value": [1]},
-                    "charArray":    {"type": "[C","value": [13]},
-                    "shortArray":   {"type": "[S","value": [2]},
-                    "intArray":     {"type": "[I","value": [4]},
-                    "longArray":    {"type": "[J","value": [5]},
-                    "floatArray":   {"type": "[F", "value": [6.5]},
-                    "doubleArray":  {"type": "[D","value": [7.5]}
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserialize_objectWithPrimitiveArraysFields() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PrimitiveArrays",
-                  "state": {
-                    "booleanArray": {"type": "[Z", "value": [true, false]},
-                    "byteArray":    {"type": "[B","value": [1]},
-                    "charArray":    {"type": "[C","value": [13]},
-                    "shortArray":   {"type": "[S","value": [2]},
-                    "intArray":     {"type": "[I","value": [4]},
-                    "longArray":    {"type": "[J","value": [5]},
-                    "floatArray":   {"type": "[F", "value": [6.5]},
-                    "doubleArray":  {"type": "[D","value": [7.5]}
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserialize_objectWithPrimitiveArraysFields(@JsonFile("/payloads/primitive-arrays.json") String json) {
         PrimitiveArrays actualInstance = jsonSerde.deserialize(json, PrimitiveArrays.class);
 
         PrimitiveArrays expectedInstance = new PrimitiveArrays(
@@ -252,105 +146,25 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithStringFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithStringFields(@JsonFile("/payloads/dto-string-fields.json") String expectedJson) {
         StringFields dummy = new StringFields("Mike", "Smith");
 
         String actualJson = jsonSerde.serialize(dummy);
 
-        String expectedJson = """
-                {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$StringFields",
-                  "state" : {
-                    "firstName" : {
-                      "type" : "java.lang.String",
-                      "value" : "Mike"
-                    },
-                    "lastName" : {
-                      "type" : "java.lang.String",
-                      "value" : "Smith"
-                    }
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithArrayFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithArrayFields(@JsonFile("/payloads/dto-array-fields.json") String expectedJson) {
         PojoArrays dummy = new PojoArrays(new StringFields[]{new StringFields("Mike", "Smith"), new StringFields("Dennis", "Ritchie")});
 
         String actualJson = jsonSerde.serialize(dummy);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoArrays",
-                  "state": {
-                    "strings": {
-                      "type": "[Linc.evil.serde.JsonSerdeTest$StringFields;",
-                      "value": [
-                        {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-                          "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                            "state": {
-                              "firstName": {"type": "java.lang.String", "value": "Mike"},
-                              "lastName": {"type": "java.lang.String", "value": "Smith"}},
-                            "__id": 2
-                          }
-                        },
-                        {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-                          "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                            "state": {
-                              "firstName": {"type": "java.lang.String", "value": "Dennis"},
-                              "lastName": {"type": "java.lang.String", "value": "Ritchie"}},
-                            "__id": 3
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithArrayOfObjectsFields() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoArrays",
-                  "state": {
-                    "strings": {
-                      "type": "[Linc.evil.serde.JsonSerdeTest$StringFields;",
-                      "value": [
-                        {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-                          "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                            "state": {
-                              "firstName": {"type": "java.lang.String", "value": "Mike"},
-                              "lastName": {"type": "java.lang.String", "value": "Smith"}},
-                            "__id": 2
-                          }
-                        },
-                        {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-                          "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                            "state": {
-                              "firstName": {"type": "java.lang.String", "value": "Dennis"},
-                              "lastName": {"type": "java.lang.String", "value": "Ritchie"}},
-                            "__id": 3
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithArrayOfObjectsFields(@JsonFile("/payloads/dto-array-fields.json") String json) {
         PojoArrays actualObject = jsonSerde.deserialize(json, PojoArrays.class);
 
         PojoArrays expectedObject = new PojoArrays(new StringFields[]{new StringFields("Mike", "Smith"), new StringFields("Dennis", "Ritchie")});
@@ -358,7 +172,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithPrimitiveFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithPrimitiveFields(@JsonFile("/payloads/primitive-fields.json") String expectedJson) {
         PrimitivesTypes dummy = new PrimitivesTypes(
                 true,
                 (byte) 1,
@@ -372,42 +186,11 @@ public class JsonSerdeTest {
 
         String actualJson = jsonSerde.serialize(dummy);
 
-        String expectedJson = """
-                {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$PrimitivesTypes",
-                  "state" : {
-                    "booleanField" : true,
-                    "byteField" : 1,
-                    "charField" : 2,
-                    "shortField" : 3,
-                    "intField" : 4,
-                    "longField" : 5,
-                    "floatField" : 6.5,
-                    "doubleField" : 7.5
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithPrimitiveFields() {
-        String json = """
-                {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$PrimitivesTypes",
-                  "state" : {
-                    "booleanField" : true,
-                    "byteField" : 1,
-                    "charField" : 2,
-                    "shortField" : 3,
-                    "intField" : 4,
-                    "longField" : 5,
-                    "floatField" : 6.5,
-                    "doubleField" : 7.5
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithPrimitiveFields(@JsonFile("/payloads/primitive-fields.json") String json) {
         PrimitivesTypes actualObject = jsonSerde.deserialize(json, PrimitivesTypes.class);
 
         PrimitivesTypes expectedObject = new PrimitivesTypes(true, (byte) 1, (char) 2, (short) 3, 4, 5L, 6.5f, 7.5D);
@@ -415,40 +198,16 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldIgnoreStaticAndTransientFields_uponSerialization() {
+    public void shouldIgnoreStaticAndTransientFields_uponSerialization(@JsonFile("/payloads/ignore-static-fields.json") String expectedJson) {
         IgnoreStaticFields dummy = new IgnoreStaticFields("Mike");
 
         String actualJson = jsonSerde.serialize(dummy);
 
-        String expectedJson = """
-                {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$IgnoreStaticFields",
-                  "state" : {
-                    "name" : {
-                      "type" : "java.lang.String",
-                      "value" : "Mike"
-                    },
-                    "age" : 666
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldIgnoreStaticAndTransientFields_uponDeserialization() {
-        String json = """
-                {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$IgnoreStaticFields",
-                  "state" : {
-                    "name" : {
-                      "type" : "java.lang.String",
-                      "value" : "Mike"
-                    }
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldIgnoreStaticAndTransientFields_uponDeserialization(@JsonFile("/payloads/ignore-static-fields.json") String json) {
         IgnoreStaticFields actualObject = jsonSerde.deserialize(json, IgnoreStaticFields.class);
 
         IgnoreStaticFields expectedObject = new IgnoreStaticFields("Mike");
@@ -456,67 +215,16 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithNestedObjects() {
+    public void shouldBeAbleToSerializeToJson_objectWithNestedObjects(@JsonFile("/payloads/nested-dto.json") String expectedJson) {
         PojoFields dummy = new PojoFields(new StringFields("Mike", "Smith"), 42);
 
         String actualJson = jsonSerde.serialize(dummy);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoFields",
-                  "__id": 1,
-                  "state": {
-                    "user": {
-                      "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-                      "value": {
-                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                        "__id": 2,
-                        "state": {
-                          "firstName": {
-                            "type": "java.lang.String",
-                            "value": "Mike"
-                          },
-                          "lastName": {
-                            "type": "java.lang.String",
-                            "value": "Smith"
-                          }
-                        }
-                      }
-                    },
-                    "age": 42
-                  }
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithNestedObjects() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoFields",
-                  "__id": 1,
-                  "state": {
-                    "user": {
-                      "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-                      "value": {
-                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                        "__id": 2,
-                        "state": {
-                          "firstName": {
-                            "type": "java.lang.String",
-                            "value": "Mike"
-                          },
-                          "lastName": {
-                            "type": "java.lang.String",
-                            "value": "Smith"
-                          }
-                        }
-                      }
-                    },
-                    "age": 42
-                  }
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithNestedObjects(@JsonFile("/payloads/nested-dto.json") String json) {
         PojoFields actualObject = jsonSerde.deserialize(json, PojoFields.class);
 
         PojoFields expectedObject = new PojoFields(new StringFields("Mike", "Smith"), 42);
@@ -524,43 +232,16 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeFromJson_objectWithEnumFields() {
+    public void shouldBeAbleToSerializeFromJson_objectWithEnumFields(@JsonFile("/payloads/enum-fields.json") String expectedJson) {
         EnumFieldValues dummy = new EnumFieldValues(EnumFieldValues.Season.SPRING, "Mike", null);
 
         String actualJson = jsonSerde.serialize(dummy);
 
-        String expectedJson = """
-                {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$EnumFieldValues",
-                   "__id": 1,
-                   "state": {
-                     "season": {
-                       "type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season",
-                       "value": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": "SPRING"}
-                     },
-                     "name": {"type": "java.lang.String", "value": "Mike"},
-                     "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": null}
-                   }
-                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithEnumFields() {
-        String json = """
-                {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$EnumFieldValues",
-                   "__id": 1,
-                   "state": {
-                     "season": {
-                       "type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season",
-                       "value": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": "SPRING"}
-                     },
-                     "name": {"type": "java.lang.String", "value": "Mike"},
-                     "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": null}
-                   }
-                 }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithEnumFields(@JsonFile("/payloads/enum-fields.json") String json) {
         EnumFieldValues actualDeserializedInstance = jsonSerde.deserialize(json, EnumFieldValues.class);
 
         EnumFieldValues expectedInstance = new EnumFieldValues(EnumFieldValues.Season.SPRING, "Mike", null);
@@ -568,56 +249,16 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithListFields() {
-        ListOfStrings dummy = new ListOfStrings(List.of("Funky", "shit"));
+    public void shouldBeAbleToSerializeToJson_objectWithListFields(@JsonFile("/payloads/list-of-strings.json") String expectedJson) {
+        ListOfStrings dummy = new ListOfStrings(Arrays.asList("Funky", "shit"));
 
         String actualJson = jsonSerde.serialize(dummy);
 
-        String expectedJson = """
-                {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$ListOfStrings",
-                   "state": {
-                     "values": {
-                       "type": "java.util.ImmutableCollections$List12",
-                       "value": {
-                         "targetClass": "java.util.ImmutableCollections$List12",
-                         "state": {
-                           "e0": {"type": "java.lang.String", "value": "Funky"},
-                           "e1": {"type": "java.lang.String", "value": "shit"}
-                         },
-                         "__id": 2
-                       }
-                     }
-                   },
-                   "__id": 1
-                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithCircularDependencies() {
-        String json = """
-                {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$CircularInstance1",
-                   "state": {
-                     "circularInstance2": {
-                       "type": "inc.evil.serde.JsonSerdeTest$CircularInstance2",
-                       "value": {
-                         "targetClass": "inc.evil.serde.JsonSerdeTest$CircularInstance2",
-                         "state": {
-                           "circularInstance1": {
-                             "type": "inc.evil.serde.JsonSerdeTest$CircularInstance1",
-                             "value": {"type": "__ref", "value": "1"}
-                           },
-                           "name": {"type": "java.lang.String", "value": "Mike"}
-                         },
-                         "__id": 2
-                       }
-                     },
-                     "age": 42
-                   },
-                   "__id": 1
-                 }""";
+    public void shouldBeAbleToDeserializeFromJson_objectWithCircularDependencies(@JsonFile("/payloads/circular-dependencies.json") String json) {
 
         CircularInstance1 actualInstance = jsonSerde.deserialize(json, CircularInstance1.class);
 
@@ -631,7 +272,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithCircularDependencies() {
+    public void shouldBeAbleToSerializeToJson_objectWithCircularDependencies(@JsonFile("/payloads/circular-dependencies.json") String expectedJson) {
         CircularInstance1 instance1 = new CircularInstance1();
         CircularInstance2 instance2 = new CircularInstance2(instance1, "Mike");
         instance1.age = 42;
@@ -639,52 +280,11 @@ public class JsonSerdeTest {
 
         String actualJson = jsonSerde.serialize(instance1);
 
-        String expectedJson = """
-                {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$CircularInstance1",
-                   "state": {
-                     "circularInstance2": {
-                       "type": "inc.evil.serde.JsonSerdeTest$CircularInstance2",
-                       "value": {
-                         "targetClass": "inc.evil.serde.JsonSerdeTest$CircularInstance2",
-                         "state": {
-                           "circularInstance1": {
-                             "type": "inc.evil.serde.JsonSerdeTest$CircularInstance1",
-                             "value": {"type": "__ref", "value": "1"}
-                           },
-                           "name": {"type": "java.lang.String", "value": "Mike"}
-                         },
-                         "__id": 2
-                       }
-                     },
-                     "age": 42
-                   },
-                   "__id": 1
-                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithListFields() {
-        String json = """
-                {
-                   "targetClass": "inc.evil.serde.JsonSerdeTest$ListOfStrings",
-                   "state": {
-                     "values": {
-                       "type": "java.util.ImmutableCollections$List12",
-                       "value": {
-                         "targetClass": "java.util.ImmutableCollections$List12",
-                         "state": {
-                           "e0": {"type": "java.lang.String", "value": "Funky"},
-                           "e1": {"type": "java.lang.String", "value": "shit"}
-                         },
-                         "__id": 2
-                       }
-                     }
-                   },
-                   "__id": 1
-                 }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithListFields(@JsonFile("/payloads/list-of-strings.json") String json) {
         ListOfStrings actualDummy = jsonSerde.deserialize(json, ListOfStrings.class);
 
         ListOfStrings expectedDummy = new ListOfStrings(List.of("Funky", "shit"));
@@ -692,58 +292,23 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithStringFields() {
-        String json = """
-                {
-                  "targetClass" : "inc.evil.serde.JsonSerdeTest$StringFields",
-                  "state" : {
-                    "firstName" : {
-                      "type" : "java.lang.String",
-                      "value" : "Mike"
-                    },
-                    "lastName" : {
-                      "type" : "java.lang.String",
-                      "value" : "Smith"
-                    }
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithStringFields(@JsonFile("/payloads/dto-string-fields.json") String json) {
         StringFields actualDeserializedInstance = jsonSerde.deserialize(json, StringFields.class);
 
         assertEquals(new StringFields("Mike", "Smith"), actualDeserializedInstance);
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectsWithSuperclasses() {
+    public void shouldBeAbleToSerializeToJson_objectsWithSuperclasses(@JsonFile("/payloads/inherited-fields.json") String expectedJson) {
         InheritedFields inheritedFields = new InheritedFields("Mike", 29);
 
         String actualJson = jsonSerde.serialize(inheritedFields);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$InheritedFields",
-                  "state": {
-                    "age": 29,
-                    "name": {"type": "java.lang.String", "value": "Mike"}
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectsWithSuperclasses() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$InheritedFields",
-                  "state": {
-                    "age": 29,
-                    "name": {"type": "java.lang.String", "value": "Mike"}
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectsWithSuperclasses(@JsonFile("/payloads/inherited-fields.json") String json) {
         InheritedFields actualInstance = jsonSerde.deserialize(json, InheritedFields.class);
 
         InheritedFields expectedInstance = new InheritedFields("Mike", 29);
@@ -751,35 +316,16 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithObjectFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithObjectFields(@JsonFile("/payloads/object-fields.json") String expectedJson) {
         UpcastToObject upcastToObject = new UpcastToObject(String.class, "John");
 
         String actualJson = jsonSerde.serialize(upcastToObject);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$UpcastToObject",
-                  "state": {
-                    "source": {"type": "java.lang.Class", "value": "java.lang.String"},
-                    "name": {"type": "java.lang.String", "value": "John"}
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithObjectFields() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$UpcastToObject",
-                  "state": {
-                    "source": {"type": "java.lang.Class", "value": "java.lang.String"},
-                    "name": {"type": "java.lang.String", "value": "John"}
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithObjectFields(@JsonFile("/payloads/object-fields.json") String json) {
         UpcastToObject actualInstance = jsonSerde.deserialize(json, UpcastToObject.class);
 
         UpcastToObject expectedInstance = new UpcastToObject(String.class, "John");
@@ -787,7 +333,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithDateFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithDateFields(@JsonFile("/payloads/date-fields.json") String expectedJson) {
         Dates dates = new Dates(
                 LocalDate.of(2020, Month.DECEMBER, 25),
                 LocalDateTime.of(2020, Month.NOVEMBER, 21, 17, 25, 59),
@@ -796,34 +342,11 @@ public class JsonSerdeTest {
 
         String actualJson = jsonSerde.serialize(dates);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$Dates",
-                  "state": {
-                    "localDate": {"type": "java.time.LocalDate", "value": "2020-12-25"},
-                    "localDateTime": {"type": "java.time.LocalDateTime", "value": "2020-11-21T17:25:59"},
-                    "offsetDateTime": {"type": "java.time.OffsetDateTime", "value": "2021-05-02T14:40:50.000000003Z"},
-                    "zonedDateTime": {"type": "java.time.ZonedDateTime", "value": "2020-11-23T13:14:45+01:00[Europe/Paris]"}
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithDateFields() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$Dates",
-                  "state": {
-                    "localDate": {"type": "java.time.LocalDate", "value": "2020-12-25"},
-                    "localDateTime": {"type": "java.time.LocalDateTime", "value": "2020-11-21T17:25:59"},
-                    "offsetDateTime": {"type": "java.time.OffsetDateTime", "value": "2021-05-02T14:40:50.000000003Z"},
-                    "zonedDateTime": {"type": "java.time.ZonedDateTime", "value": "2020-11-23T13:14:45+01:00[Europe/Paris]"}
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithDateFields(@JsonFile("/payloads/date-fields.json") String json) {
         Dates actualInstance = jsonSerde.deserialize(json, Dates.class);
 
         Dates expectedInstance = new Dates(
@@ -835,17 +358,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToHandleNullPrimitiveWrappers() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$NullWrappers",
-                  "state": {
-                    "age": 11123456789,
-                    "id": null
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_nullPrimitiveWrappers(@JsonFile("/payloads/null-primitive-wrapper.json") String json) {
         NullWrappers actualInstance = jsonSerde.deserialize(json, NullWrappers.class);
 
         NullWrappers expectedInstance = new NullWrappers(null, 11123456789L);
@@ -853,37 +366,25 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithNullDatesFields() {
-        NullDates nullDates = new NullDates(null, null, null);
+    public void shouldBeAbleToSerializeToJson_nullPrimitiveWrappers(@JsonFile("/payloads/null-primitive-wrapper.json") String expectedJson) {
+        NullWrappers nullWrappers = new NullWrappers(null, 11123456789L);
 
-        String actualJson = jsonSerde.serialize(nullDates);
+        String actualJson = jsonSerde.serialize(nullWrappers);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$NullDates",
-                  "state": {
-                    "localDate": {"type": "java.time.LocalDate", "value": null},
-                    "localDateTime": {"type": "java.time.LocalDateTime", "value": null},
-                    "offsetDateTime": {"type": "java.time.OffsetDateTime", "value": null}
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithNullDatesFields() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$NullDates",
-                  "state": {
-                    "localDate": {"type": "java.time.LocalDate", "value": null},
-                    "localDateTime": {"type": "java.time.LocalDateTime", "value": null},
-                    "offsetDateTime": {"type": "java.time.OffsetDateTime", "value": null}
-                  },
-                  "__id": 1
-                }""";
+    public void shouldBeAbleToSerializeToJson_objectWithNullDatesFields(@JsonFile("/payloads/null-dates.json") String expectedJson) {
+        NullDates nullDates = new NullDates(null, null, null);
 
+        String actualJson = jsonSerde.serialize(nullDates);
+
+        assertJsonEquals(expectedJson, actualJson);
+    }
+
+    @Test
+    public void shouldBeAbleToDeserializeFromJson_objectWithNullDatesFields(@JsonFile("/payloads/null-dates.json") String json) {
         NullDates actualInstance = jsonSerde.deserialize(json, NullDates.class);
 
         NullDates expectedInstance = new NullDates(null, null, null);
@@ -891,23 +392,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithBigNumbersFields() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$BigNumbers",
-                  "state": {
-                    "bigDecimal": {
-                      "type": "java.math.BigDecimal",
-                      "value": "66612334556798765645435342334357676863343434354672234566.69"
-                    },
-                    "bigInteger": {
-                      "type": "java.math.BigInteger",
-                      "value": "123445678990766"
-                    }
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithBigNumbersFields(@JsonFile("/payloads/big-numbers.json") String json) {
         BigNumbers actualInstance = jsonSerde.deserialize(json, BigNumbers.class);
 
         BigNumbers expectedInstance = new BigNumbers(
@@ -918,7 +403,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithBigNumbersFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithBigNumbersFields(@JsonFile("/payloads/big-numbers.json") String expectedJson) {
         BigNumbers bigNumbers = new BigNumbers(
                 new BigDecimal("66612334556798765645435342334357676863343434354672234566.69"),
                 new BigInteger("123445678990766")
@@ -926,26 +411,11 @@ public class JsonSerdeTest {
 
         String actualJson = jsonSerde.serialize(bigNumbers);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$BigNumbers",
-                  "state": {
-                    "bigDecimal": {
-                      "type": "java.math.BigDecimal",
-                      "value": "66612334556798765645435342334357676863343434354672234566.69"
-                    },
-                    "bigInteger": {
-                      "type": "java.math.BigInteger",
-                      "value": "123445678990766"
-                    }
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithPeriodsAndDurationFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithPeriodsAndDurationFields(@JsonFile("/payloads/periods-durations.json") String expectedJson) {
         PeriodsAndDurations periodsAndDurations = new PeriodsAndDurations(
                 Period.ofDays(1),
                 Duration.ofMinutes(2)
@@ -953,30 +423,11 @@ public class JsonSerdeTest {
 
         String actualJson = jsonSerde.serialize(periodsAndDurations);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PeriodsAndDurations",
-                  "state": {
-                    "period": {"type": "java.time.Period", "value": "P1D"},
-                    "duration": {"type": "java.time.Duration", "value": "PT2M"}
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithPeriodsAndDurationFields() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$PeriodsAndDurations",
-                  "state": {
-                    "period": {"type": "java.time.Period", "value": "P1D"},
-                    "duration": {"type": "java.time.Duration", "value": "PT2M"}
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithPeriodsAndDurationFields(@JsonFile("/payloads/periods-durations.json") String json) {
         PeriodsAndDurations actualInstance = jsonSerde.deserialize(json, PeriodsAndDurations.class);
 
         PeriodsAndDurations expectedInstance = new PeriodsAndDurations(
@@ -987,35 +438,16 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithNullArraysFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithNullArraysFields(@JsonFile("/payloads/null-arrays.json") String expectedJson) {
         NullArrays nullArrays = new NullArrays(null, null);
 
         String actualJson = jsonSerde.serialize(nullArrays);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$NullArrays",
-                  "state": {
-                    "bytes": null,
-                    "strings": null
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializFromJson_objectWithNullArraysFields() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$NullArrays",
-                  "state": {
-                    "bytes": null,
-                    "strings": null
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithNullArraysFields(@JsonFile("/payloads/null-arrays.json") String json) {
         NullArrays actualInstance = jsonSerde.deserialize(json, NullArrays.class);
 
         NullArrays expectedInstance = new NullArrays(null, null);
@@ -1023,33 +455,16 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithNullInterfaceFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithNullInterfaceFields(@JsonFile("/payloads/null-interface-fields.json") String expectedJson) {
         NullInterfaceFields nullInterfaceFields = new NullInterfaceFields(null);
 
         String actualJson = jsonSerde.serialize(nullInterfaceFields);
 
-        String expectedJson = """
-                {
-                    "targetClass": "inc.evil.serde.JsonSerdeTest$NullInterfaceFields",
-                    "state": {
-                      "strings": {"type": "java.util.List", "value": null}
-                    },
-                    "__id": 1
-                  }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithNullInterfaceFields() {
-        String json = """
-                {
-                    "targetClass": "inc.evil.serde.JsonSerdeTest$NullInterfaceFields",
-                    "state": {
-                      "strings": {"type": "java.util.List", "value": null}
-                    },
-                    "__id": 1
-                  }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithNullInterfaceFields(@JsonFile("/payloads/null-interface-fields.json") String json) {
         NullInterfaceFields actualInstance = jsonSerde.deserialize(json, NullInterfaceFields.class);
 
         NullInterfaceFields expectedInstance = new NullInterfaceFields(null);
@@ -1057,35 +472,16 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithNullFieldsOfTypeClass() {
+    public void shouldBeAbleToSerializeToJson_objectWithNullFieldsOfTypeClass(@JsonFile("/payloads/null-class-fields.json") String expectedJson) {
         NullClassFields nullClassFields = new NullClassFields(null, "Mike");
 
         String actualJson = jsonSerde.serialize(nullClassFields);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$NullClassFields",
-                  "state": {
-                    "targetClass": {"type": "java.lang.Class", "value": null},
-                    "name": {"type": "java.lang.String", "value": "Mike"}
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithNullFieldsOfTypeClass() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$NullClassFields",
-                  "state": {
-                    "targetClass": {"type": "java.lang.Class", "value": null},
-                    "name": {"type": "java.lang.String", "value": "Mike"}
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithNullFieldsOfTypeClass(@JsonFile("/payloads/null-class-fields.json") String json) {
         NullClassFields actualInstance = jsonSerde.deserialize(json, NullClassFields.class);
 
         NullClassFields expectedInstance = new NullClassFields(null, "Mike");
@@ -1093,7 +489,7 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectsWithObjectArraysFields() {
+    public void shouldBeAbleToSerializeToJson_objectsWithObjectArraysFields(@JsonFile("/payloads/object-arrays.json") String expectedJson) {
         ObjectArrays objectArrays = new ObjectArrays(
                 new Object[]{
                         Override.class, "Mike", 42, new StringFields("John", "Doe")
@@ -1102,64 +498,11 @@ public class JsonSerdeTest {
 
         String actualJson = jsonSerde.serialize(objectArrays);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$ObjectArrays",
-                  "state": {
-                    "objects": {
-                      "type": "[Ljava.lang.Object;",
-                      "value": [
-                        {"type": "java.lang.Class", "value": "java.lang.Override"},
-                        {"type": "java.lang.String", "value": "Mike"},
-                        {"type": "java.lang.Integer", "value": 42},
-                        {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-                          "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                            "state": {
-                              "firstName": {"type": "java.lang.String", "value": "John"},
-                              "lastName": {"type": "java.lang.String", "value": "Doe"}
-                            },
-                            "__id": 2
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectsWithObjectArraysFields() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$ObjectArrays",
-                  "state": {
-                    "objects": {
-                      "type": "[Ljava.lang.Object;",
-                      "value": [
-                        {"type": "java.lang.Class", "value": "java.lang.Override"},
-                        {"type": "java.lang.String", "value": "Mike"},
-                        {"type": "java.lang.Integer", "value": 42},
-                        {
-                          "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-                          "value": {
-                            "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                            "state": {
-                              "firstName": {"type": "java.lang.String", "value": "John"},
-                              "lastName": {"type": "java.lang.String", "value": "Doe"}
-                            },
-                            "__id": 2
-                          }
-                        }
-                      ]
-                    }
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectsWithObjectArraysFields(@JsonFile("/payloads/object-arrays.json") String json) {
         ObjectArrays actualInstance = jsonSerde.deserialize(json, ObjectArrays.class);
 
         ObjectArrays expectedInstance = new ObjectArrays(
@@ -1171,53 +514,16 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectsWithClashingFieldNames() {
+    public void shouldBeAbleToSerializeToJson_objectsWithClashingFieldNames(@JsonFile("/payloads/clashing-field-names.json") String expectedJson) {
         ClashingFieldNames clashingFieldNames = new ClashingFieldNames("John", new StringFields("Mike", "Smith"));
 
         String actualJson = jsonSerde.serialize(clashingFieldNames);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$ClashingFieldNames",
-                  "state": {
-                    "inc.evil.serde.JsonSerdeTest$ClashingFieldNames.name": {
-                      "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-                      "value": {
-                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                        "state": {
-                          "firstName": {"type": "java.lang.String", "value": "Mike"},
-                          "lastName": {"type": "java.lang.String", "value": "Smith"}},
-                        "__id": 2
-                      }
-                    },
-                    "inc.evil.serde.JsonSerdeTest$Named.name": {"type": "java.lang.String", "value": "John"}
-                  },
-                  "__id": 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectsWithClashingFieldNames() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$ClashingFieldNames",
-                  "state": {
-                    "inc.evil.serde.JsonSerdeTest$ClashingFieldNames.name": {
-                      "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-                      "value": {
-                        "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-                        "state": {
-                          "firstName": {"type": "java.lang.String", "value": "Mike"},
-                          "lastName": {"type": "java.lang.String", "value": "Smith"}},
-                        "__id": 2
-                      }
-                    },
-                    "inc.evil.serde.JsonSerdeTest$Named.name": {"type": "java.lang.String", "value": "John"}
-                  },
-                  "__id": 1
-                }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectsWithClashingFieldNames(@JsonFile("/payloads/clashing-field-names.json") String json) {
         ClashingFieldNames actualInstance = jsonSerde.deserialize(json, ClashingFieldNames.class);
 
         ClashingFieldNames expectedInstance = new ClashingFieldNames("John", new StringFields("Mike", "Smith"));
@@ -1225,61 +531,16 @@ public class JsonSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_genericObject() {
+    public void shouldBeAbleToSerializeToJson_genericObject(@JsonFile("/payloads/generic-object.json") String expectedJson) {
         Node<String, Integer> node = new Node<>(222, "Mike", 42, new Node<>(333, "Dennis", 45));
 
         String actualJson = jsonSerde.serialize(node);
 
-        String expectedJson = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$Node",
-                  "state": {"hash": 222, "key": {"type": "java.lang.String", "value": "Mike"},
-                    "val": {"type": "java.lang.Integer", "value": 42},
-                    "next": {
-                      "type": "inc.evil.serde.JsonSerdeTest$Node",
-                      "value": {
-                        "targetClass": "inc.evil.serde.JsonSerdeTest$Node",
-                        "state": {
-                          "hash": 333,
-                          "key": {"type": "java.lang.String", "value": "Dennis"},
-                          "val": {"type": "java.lang.Integer", "value": 45},
-                          "next": {"type": "inc.evil.serde.JsonSerdeTest$Node", "value": null}
-                        },
-                        "__id": 2
-                      }
-                    }
-                  },
-                  "__id": 1
-                }
-                """;
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_genericObject() {
-        String json = """
-                {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$Node",
-                  "state": {"hash": 222, "key": {"type": "java.lang.String", "value": "Mike"},
-                    "val": {"type": "java.lang.Integer", "value": 42},
-                    "next": {
-                      "type": "inc.evil.serde.JsonSerdeTest$Node",
-                      "value": {
-                        "targetClass": "inc.evil.serde.JsonSerdeTest$Node",
-                        "state": {
-                          "hash": 333,
-                          "key": {"type": "java.lang.String", "value": "Dennis"},
-                          "val": {"type": "java.lang.Integer", "value": 45},
-                          "next": {"type": "inc.evil.serde.JsonSerdeTest$Node", "value": null}
-                        },
-                        "__id": 2
-                      }
-                    }
-                  },
-                  "__id": 1
-                }
-                """;
-
+    public void shouldBeAbleToDeserializeFromJson_genericObject(@JsonFile("/payloads/generic-object.json") String json) {
         Node<String, Integer> actualInstance = jsonSerde.deserialize(json, Node.class);
 
         Node<String, Integer> expectedInstance = new Node<>(222, "Mike", 42, new Node<>(333, "Dennis", 45));
@@ -1320,11 +581,11 @@ public class JsonSerdeTest {
         @Override
         public String toString() {
             return "Node{" +
-                    "hash=" + hash +
-                    ", key=" + key +
-                    ", val=" + val +
-                    ", next=" + next +
-                    '}';
+                   "hash=" + hash +
+                   ", key=" + key +
+                   ", val=" + val +
+                   ", next=" + next +
+                   '}';
         }
     }
 
@@ -1472,12 +733,14 @@ public class JsonSerdeTest {
     public static class CircularInstance2 {
         private final CircularInstance1 circularInstance1;
         private final String name;
+
         public CircularInstance2(CircularInstance1 circularInstance1, String name) {
             this.circularInstance1 = circularInstance1;
             this.name = name;
         }
 
     }
+
     public static class InheritedFields extends Named {
         private int age;
 
@@ -1504,9 +767,9 @@ public class JsonSerdeTest {
         @Override
         public String toString() {
             return "InheritedFields{" +
-                    "name='" + name + '\'' +
-                    ", age=" + age +
-                    '}';
+                   "name='" + name + '\'' +
+                   ", age=" + age +
+                   '}';
         }
     }
 
@@ -1618,10 +881,10 @@ public class JsonSerdeTest {
         @Override
         public String toString() {
             return "IgnoreStaticFields{" +
-                    "id=" + id +
-                    ", age=" + age +
-                    ", name='" + name + '\'' +
-                    '}';
+                   "id=" + id +
+                   ", age=" + age +
+                   ", name='" + name + '\'' +
+                   '}';
         }
     }
 

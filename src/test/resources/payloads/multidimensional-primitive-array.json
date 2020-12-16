@@ -1,0 +1,15 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$MultidimensionalArrays",
+  "state": {
+    "booleans": {
+      "type": "[[Z",
+      "value": [
+        {"type": "[Z", "value": [false, true]},
+        {"type": "[Z", "value": [true, false, true]},
+        {"type": "[Z", "value": [true, true]},
+        {"type": "[Z", "value": [true, false, false, true]}
+      ]
+    }
+  },
+  "__id": 1
+}

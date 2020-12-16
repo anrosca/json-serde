@@ -1,0 +1,14 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$BigNumbers",
+  "state": {
+    "bigDecimal": {
+      "type": "java.math.BigDecimal",
+      "value": "66612334556798765645435342334357676863343434354672234566.69"
+    },
+    "bigInteger": {
+      "type": "java.math.BigInteger",
+      "value": "123445678990766"
+    }
+  },
+  "__id": 1
+}

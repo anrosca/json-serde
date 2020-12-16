@@ -1,0 +1,14 @@
+{
+  "targetClass" : "inc.evil.serde.JsonSerdeTest$PrimitivesTypes",
+  "state" : {
+    "booleanField" : true,
+    "byteField" : 1,
+    "charField" : 2,
+    "shortField" : 3,
+    "intField" : 4,
+    "longField" : 5,
+    "floatField" : 6.5,
+    "doubleField" : 7.5
+  },
+  "__id": 1
+}

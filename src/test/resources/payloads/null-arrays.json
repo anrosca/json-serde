@@ -1,0 +1,8 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$NullArrays",
+  "state": {
+    "bytes": null,
+    "strings": null
+  },
+  "__id": 1
+}

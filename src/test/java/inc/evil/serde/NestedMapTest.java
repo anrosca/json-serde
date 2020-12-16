@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NestedMapTest {
     enum Seasons { SPRING, SUMMER, AUTUMN, WINTER }
 
+    private final JsonMapper jsonMapper = new JsonMapper();
+
     @Test
     public void shouldBeAbleToSerializeAndDeserializeMapWithEnumMapValues() {
         Map<Object, Map<Seasons, List<Seasons>>> map = new ConcurrentHashMap<>();
@@ -21,7 +23,6 @@ public class NestedMapTest {
         map.put(new User("Mike", "Smith"), userValue);
         MapHolder mapHolder = new MapHolder(map, null);
 
-        JsonMapper jsonMapper = new JsonMapper();
         String json = jsonMapper.serialize(mapHolder);
         MapHolder actualInstance = jsonMapper.deserialize(json, MapHolder.class);
 
@@ -36,7 +37,6 @@ public class NestedMapTest {
         map.put(new User("Mike", "Smith"), userValue);
         MapHolder mapHolder = new MapHolder(null, map);
 
-        JsonMapper jsonMapper = new JsonMapper();
         String json = jsonMapper.serialize(mapHolder);
         MapHolder actualInstance = jsonMapper.deserialize(json, MapHolder.class);
 
@@ -52,11 +52,29 @@ public class NestedMapTest {
         map.put(new User("Mike", "Smith"), userValue);
         TripleMapHolder mapHolder = new TripleMapHolder(map);
 
-        JsonMapper jsonMapper = new JsonMapper();
         String json = jsonMapper.serialize(mapHolder);
         TripleMapHolder actualInstance = jsonMapper.deserialize(json, TripleMapHolder.class);
 
         assertEquals(mapHolder, actualInstance);
+    }
+
+    @Test
+    public void shouldBeAbleToSerializeAndDeserialize_EnumMaps() {
+        EnumMap<Seasons, List<Seasons>> seasons = new EnumMap<>(Seasons.class);
+        seasons.put(Seasons.SPRING, new ArrayList<>(Arrays.asList(Seasons.SUMMER, Seasons.AUTUMN, Seasons.WINTER)));
+        EnumManHolder enumManHolder = new EnumManHolder(seasons);
+
+        String json = jsonMapper.serialize(enumManHolder);
+        EnumManHolder actualInstance = jsonMapper.deserialize(json, EnumManHolder.class);
+
+        assertEquals(enumManHolder, actualInstance);
+    }
+
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
+    public static class EnumManHolder {
+        private final Map<Seasons, List<Seasons>> seasons;
     }
 
     @AllArgsConstructor

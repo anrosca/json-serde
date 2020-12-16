@@ -1,0 +1,24 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$PojoFields",
+  "__id": 1,
+  "state": {
+    "user": {
+      "type": "inc.evil.serde.JsonSerdeTest$StringFields",
+      "value": {
+        "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
+        "__id": 2,
+        "state": {
+          "firstName": {
+            "type": "java.lang.String",
+            "value": "Mike"
+          },
+          "lastName": {
+            "type": "java.lang.String",
+            "value": "Smith"
+          }
+        }
+      }
+    },
+    "age": 42
+  }
+}

@@ -82,9 +82,18 @@ public class NumericSerde implements SerializerDeserializer {
         if (node.isFloat() || node.isDouble()) {
             return node.asDouble();
         } else if (node.isNumber()) {
-            return node.asLong();
+            return parseNumericNode(node);
         } else {
             throw new RuntimeException(node.toPrettyString() + " is not numeric");
+        }
+    }
+
+    private Number parseNumericNode(JsonNode node) {
+        String number = node.toString();
+        try {
+            return Integer.parseInt(number);
+        } catch (Exception e) {
+            return node.asLong();
         }
     }
 }

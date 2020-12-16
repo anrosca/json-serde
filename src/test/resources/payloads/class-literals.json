@@ -1,0 +1,7 @@
+{
+  "targetClass": "inc.evil.serde.JsonSerdeTest$ClassLiteral",
+  "state": {
+    "targetClass": {"type": "java.lang.Class", "value": "java.util.ArrayList"}
+  },
+  "__id": 1
+}
