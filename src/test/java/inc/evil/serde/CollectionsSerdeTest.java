@@ -27,23 +27,26 @@ public class CollectionsSerdeTest {
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
-                  "state": {
-                    "strings": {
-                      "type": "java.util.ArrayList",
-                      "value": [
-                        {
-                          "targetClass": "inc.evil.serde.CollectionsSerdeTest$User",
-                          "state": {
-                            "name": {"type": "java.lang.String", "value": "Mike"}
-                          },
-                          "__id": 2
-                        }
-                      ]
-                    }
-                  },
-                  "__id": 1
-                }""";
+                   "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
+                   "__id": 1,
+                   "state": {
+                     "strings": {
+                       "type": "java.util.ArrayList",
+                       "value": {
+                         "type": "java.util.ArrayList",
+                         "value": [
+                           {
+                             "targetClass": "inc.evil.serde.CollectionsSerdeTest$User",
+                             "__id": 2,
+                             "state": {
+                               "name": {"type": "java.lang.String", "value": "Mike"}
+                             }
+                           }
+                         ]
+                       }
+                     }
+                   }
+                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
@@ -51,23 +54,26 @@ public class CollectionsSerdeTest {
     public void shouldBeAbleToDeserializeFromJson_ArrayListFields() {
         String json = """
                 {
-                  "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
-                  "state": {
-                    "strings": {
-                      "type": "java.util.ArrayList",
-                      "value": [
-                        {
-                          "targetClass": "inc.evil.serde.CollectionsSerdeTest$User",
-                          "state": {
-                            "name": {"type": "java.lang.String", "value": "Mike"}
-                          },
-                          "__id": 2
-                        }
-                      ]
-                    }
-                  },
-                  "__id": 1
-                }""";
+                   "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
+                   "__id": 1,
+                   "state": {
+                     "strings": {
+                       "type": "java.util.ArrayList",
+                       "value": {
+                         "type": "java.util.ArrayList",
+                         "value": [
+                           {
+                             "targetClass": "inc.evil.serde.CollectionsSerdeTest$User",
+                             "__id": 2,
+                             "state": {
+                               "name": {"type": "java.lang.String", "value": "Mike"}
+                             }
+                           }
+                         ]
+                       }
+                     }
+                   }
+                 }""";
 
         ArrayListFields actualInstance = jsonMapper.deserialize(json, ArrayListFields.class);
 
@@ -85,12 +91,18 @@ public class CollectionsSerdeTest {
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
-                  "state": {
-                    "strings": {"type": "java.util.ArrayList", "value": []}
-                  },
-                  "__id": 1
-                }""";
+                   "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
+                   "__id": 1,
+                   "state": {
+                     "strings": {
+                       "type": "java.util.ArrayList",
+                       "value": {
+                         "type": "java.util.ArrayList",
+                         "value": []
+                       }
+                     }
+                   }
+                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
@@ -98,12 +110,18 @@ public class CollectionsSerdeTest {
     public void shouldBeAbleToDeserializeFromJson_emptyArrayListFields() {
         String json = """
                 {
-                  "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
-                  "state": {
-                    "strings": {"type": "java.util.ArrayList", "value": []}
-                  },
-                  "__id": 1
-                }""";
+                   "targetClass": "inc.evil.serde.CollectionsSerdeTest$ArrayListFields",
+                   "__id": 1,
+                   "state": {
+                     "strings": {
+                       "type": "java.util.ArrayList",
+                       "value": {
+                         "type": "java.util.ArrayList",
+                         "value": []
+                       }
+                     }
+                   }
+                 }""";
 
         ArrayListFields actualInstance = jsonMapper.deserialize(json, ArrayListFields.class);
 
@@ -121,23 +139,26 @@ public class CollectionsSerdeTest {
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.evil.serde.CollectionsSerdeTest$HashSetFields",
-                  "state": {
-                    "strings": {
-                      "type": "java.util.HashSet",
-                      "value": [
-                        {
-                          "targetClass": "inc.evil.serde.CollectionsSerdeTest$User",
-                          "state": {
-                            "name": {"type": "java.lang.String", "value": "Mike"}
-                          },
-                          "__id": 2
-                        }
-                      ]
-                    }
-                  },
-                  "__id": 1
-                }""";
+                   "targetClass": "inc.evil.serde.CollectionsSerdeTest$HashSetFields",
+                   "__id": 1,
+                   "state": {
+                     "strings": {
+                       "type": "java.util.HashSet",
+                       "value": {
+                         "type": "java.util.HashSet",
+                         "value": [
+                           {
+                             "targetClass": "inc.evil.serde.CollectionsSerdeTest$User",
+                             "__id": 2,
+                             "state": {
+                               "name": {"type": "java.lang.String", "value": "Mike"}
+                             }
+                           }
+                         ]
+                       }
+                     }
+                   }
+                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 

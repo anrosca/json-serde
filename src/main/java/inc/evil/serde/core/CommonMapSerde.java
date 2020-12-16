@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import inc.evil.serde.ObjectFactory;
 import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
@@ -25,14 +26,17 @@ public class CommonMapSerde implements SerializerDeserializer {
     @SuppressWarnings("unchecked")
     public JsonNode serialize(Object instance) {
         Map<Object, Object> mapToSerialize = (Map<Object, Object>) instance;
+        ObjectNode mapNode = new ObjectNode(JsonNodeFactory.instance);
         ArrayNode jsonNodes = new ArrayNode(JsonNodeFactory.instance);
+        mapNode.set("type", new TextNode(instance.getClass().getName()));
+        mapNode.set("value", jsonNodes);
         for (Map.Entry<Object, Object> entry : mapToSerialize.entrySet()) {
             ObjectNode mapEntryNode = new ObjectNode(JsonNodeFactory.instance);
             mapEntryNode.set("key", serdeContext.serializeValue(entry.getKey()));
             mapEntryNode.set("value", serdeContext.serializeValue(entry.getValue()));
             jsonNodes.add(mapEntryNode);
         }
-        return jsonNodes;
+        return mapNode;
     }
 
     @Override
@@ -43,6 +47,9 @@ public class CommonMapSerde implements SerializerDeserializer {
     @Override
     @SuppressWarnings("unchecked")
     public Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception {
+        if (!node.isArray()) {
+            return serdeContext.getNodeValue(node);
+        }
         ArrayNode arrayNode = (ArrayNode) node;
         Map<Object, Object> map = (Map<Object, Object>) objectFactory.makeInstance(resultingClass);
         for (int i = 0; i < arrayNode.size(); ++i) {

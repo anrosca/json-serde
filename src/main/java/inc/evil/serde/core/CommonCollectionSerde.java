@@ -3,6 +3,8 @@ package inc.evil.serde.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import inc.evil.serde.ObjectFactory;
 import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
@@ -25,10 +27,13 @@ public class CommonCollectionSerde implements SerializerDeserializer {
     public JsonNode serialize(Object instance) {
         Collection<Object> collection = (Collection<Object>) instance;
         ArrayNode jsonNodes = new ArrayNode(JsonNodeFactory.instance);
+        ObjectNode collectionNode = new ObjectNode(JsonNodeFactory.instance);
+        collectionNode.set("type", new TextNode(instance.getClass().getName()));
+        collectionNode.set("value", jsonNodes);
         for (Object item : collection) {
             jsonNodes.add(serdeContext.serializeValue(item));
         }
-        return jsonNodes;
+        return collectionNode;
     }
 
     @Override
@@ -39,6 +44,9 @@ public class CommonCollectionSerde implements SerializerDeserializer {
     @Override
     @SuppressWarnings("unchecked")
     public Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception {
+        if (!node.isArray()) {
+            return serdeContext.getNodeValue(node);
+        }
         ArrayNode arrayNode = (ArrayNode) node;
         Collection<Object> collection = (Collection<Object>) objectFactory.makeInstance(resultingClass);
         for (int i = 0; i < arrayNode.size(); ++i) {
