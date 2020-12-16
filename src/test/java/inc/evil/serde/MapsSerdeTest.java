@@ -25,36 +25,43 @@ public class MapsSerdeTest {
 
         String expectedJson = """
                 {
-                   "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
-                   "state": {
-                     "users": {
-                       "type": "java.util.HashMap",
-                       "value": [
-                         {
-                           "key": "Mike",
-                           "value": {
-                             "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                             "state": {"name": {"type": "java.lang.String", "value": "Mike"}},
-                             "__id": 2
-                           }
-                         },
-                         {
-                           "key": "John",
-                           "value": {
-                             "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                             "state": {"name": {"type": "java.lang.String", "value": "John"}},
-                             "__id": 3
-                           }
-                         }
-                       ]
-                     },
-                     "moreUsers": {
-                       "type": "java.util.Map",
-                       "value": null
-                     }
-                   },
-                   "__id": 1
-                 }""";
+                    "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
+                    "__id": 1,
+                    "state": {
+                      "users": {
+                        "type": "java.util.HashMap",
+                        "value": {
+                          "type": "java.util.HashMap",
+                          "value": [
+                            {
+                              "key": "Mike",
+                              "value": {
+                                "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+                                "__id": 2,
+                                "state": {
+                                  "name": {"type": "java.lang.String", "value": "Mike"}
+                                }
+                              }
+                            },
+                            {
+                              "key": "John",
+                              "value": {
+                                "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+                                "__id": 3,
+                                "state": {
+                                  "name": {"type": "java.lang.String", "value": "John"}
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "moreUsers": {
+                        "type": "java.util.Map",
+                        "value": null
+                      }
+                    }
+                  }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
@@ -62,36 +69,43 @@ public class MapsSerdeTest {
     public void shouldBeAbleToDeserializeFromJson_objectWithHashMapFields() {
         String json = """
                 {
-                   "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
-                   "state": {
-                     "users": {
-                       "type": "java.util.HashMap",
-                       "value": [
-                         {
-                           "key": "Mike",
-                           "value": {
-                             "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                             "state": {"name": {"type": "java.lang.String", "value": "Mike"}},
-                             "__id": 2
-                           }
-                         },
-                         {
-                           "key": "John",
-                           "value": {
-                             "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                             "state": {"name": {"type": "java.lang.String", "value": "John"}},
-                             "__id": 3
-                           }
-                         }
-                       ]
-                     },
-                     "moreUsers": {
-                       "type": "java.util.Map",
-                       "value": null
-                     }
-                   },
-                   "__id": 1
-                 }""";
+                    "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
+                    "__id": 1,
+                    "state": {
+                      "users": {
+                        "type": "java.util.HashMap",
+                        "value": {
+                          "type": "java.util.HashMap",
+                          "value": [
+                            {
+                              "key": "Mike",
+                              "value": {
+                                "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+                                "__id": 2,
+                                "state": {
+                                  "name": {"type": "java.lang.String", "value": "Mike"}
+                                }
+                              }
+                            },
+                            {
+                              "key": "John",
+                              "value": {
+                                "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+                                "__id": 3,
+                                "state": {
+                                  "name": {"type": "java.lang.String", "value": "John"}
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "moreUsers": {
+                        "type": "java.util.Map",
+                        "value": null
+                      }
+                    }
+                  }""";
 
         MapFields actualInstance = jsonMapper.deserialize(json, MapFields.class);
 
@@ -113,36 +127,43 @@ public class MapsSerdeTest {
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
-                  "state": {
-                    "users": {
-                      "type": "java.util.Map",
-                      "value": null
-                    },
-                    "moreUsers": {
-                      "type": "java.util.HashMap",
-                      "value": [
-                        {
-                          "key": {
-                            "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                            "state": {"name": {"type": "java.lang.String", "value": "Mike"}},
-                            "__id": 2
-                          },
-                          "value": "Mike"
-                        },
-                        {
-                          "key": {
-                            "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                            "state": {"name": {"type": "java.lang.String", "value": "John"}},
-                            "__id": 3
-                          },
-                          "value": "John"
-                        }
-                      ]
-                    }
-                  },
-                  "__id": 1
-                }""";
+                   "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
+                   "__id": 1,
+                   "state": {
+                     "users": {
+                       "type": "java.util.Map",
+                       "value": null
+                     },
+                     "moreUsers": {
+                       "type": "java.util.HashMap",
+                       "value": {
+                         "type": "java.util.HashMap",
+                         "value": [
+                           {
+                             "key": {
+                               "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+                               "__id": 2,
+                               "state": {
+                                 "name": {"type": "java.lang.String", "value": "Mike"}
+                               }
+                             },
+                             "value": "Mike"
+                           },
+                           {
+                             "key": {
+                               "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+                               "__id": 3,
+                               "state": {
+                                 "name": {"type": "java.lang.String", "value": "John"}
+                               }
+                             },
+                             "value": "John"
+                           }
+                         ]
+                       }
+                     }
+                   }
+                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
@@ -150,36 +171,43 @@ public class MapsSerdeTest {
     public void shouldBeAbleToDeserializeFromJson_objectWithHashMapFieldsWithObjectKeys() {
         String json = """
                 {
-                  "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
-                  "state": {
-                    "users": {
-                      "type": "java.util.Map",
-                      "value": null
-                    },
-                    "moreUsers": {
-                      "type": "java.util.HashMap",
-                      "value": [
-                        {
-                          "key": {
-                            "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                            "state": {"name": {"type": "java.lang.String", "value": "Mike"}},
-                            "__id": 2
-                          },
-                          "value": "Mike"
-                        },
-                        {
-                          "key": {
-                            "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                            "state": {"name": {"type": "java.lang.String", "value": "John"}},
-                            "__id": 3
-                          },
-                          "value": "John"
-                        }
-                      ]
-                    }
-                  },
-                  "__id": 1
-                }""";
+                   "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
+                   "__id": 1,
+                   "state": {
+                     "users": {
+                       "type": "java.util.Map",
+                       "value": null
+                     },
+                     "moreUsers": {
+                       "type": "java.util.HashMap",
+                       "value": {
+                         "type": "java.util.HashMap",
+                         "value": [
+                           {
+                             "key": {
+                               "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+                               "__id": 2,
+                               "state": {
+                                 "name": {"type": "java.lang.String", "value": "Mike"}
+                               }
+                             },
+                             "value": "Mike"
+                           },
+                           {
+                             "key": {
+                               "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+                               "__id": 3,
+                               "state": {
+                                 "name": {"type": "java.lang.String", "value": "John"}
+                               }
+                             },
+                             "value": "John"
+                           }
+                         ]
+                       }
+                     }
+                   }
+                 }""";
 
         MapFields actualInstance = jsonMapper.deserialize(json, MapFields.class);
 

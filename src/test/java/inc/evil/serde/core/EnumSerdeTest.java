@@ -1,14 +1,17 @@
 package inc.evil.serde.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import inc.evil.serde.JsonSerde;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EnumSerdeTest {
-    private final EnumSerde enumSerde = new EnumSerde();
+    private final EnumSerde enumSerde = new EnumSerde(new JsonSerde());
 
     enum Seasons {SPRING, SUMMER, AUTUMN, WINTER}
 
@@ -24,14 +27,20 @@ public class EnumSerdeTest {
 
     @Test
     public void shouldBeAbleToSerializeEnums() {
+        ObjectNode expectedNode = new ObjectNode(JsonNodeFactory.instance);
+        expectedNode.set("type", new TextNode(Seasons.class.getName()));
+        expectedNode.set("value", new TextNode(Seasons.WINTER.toString()));
+
         JsonNode serializedNode = enumSerde.serialize(Seasons.WINTER);
 
-        assertEquals(Seasons.WINTER.toString(), serializedNode.asText());
+        assertEquals(expectedNode, serializedNode);
     }
 
     @Test
     public void shouldBeAbleToDeserializeEnums() throws Exception {
-        TextNode node = new TextNode("WINTER");
+        ObjectNode node = new ObjectNode(JsonNodeFactory.instance);
+        node.set("type", new TextNode(Seasons.class.getName()));
+        node.set("value", new TextNode(Seasons.WINTER.toString()));
 
         Seasons deserializedInstance = (Seasons) enumSerde.deserialize(Seasons.class, node);
 

@@ -531,14 +531,17 @@ public class JsonSerdeTest {
 
         String expectedJson = """
                 {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$EnumFieldValues",
-                  "state": {
-                    "season": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": "SPRING"},
-                    "name": {"type": "java.lang.String", "value": "Mike"},
-                    "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": null}
-                  },
-                  "__id": 1
-                }""";
+                   "targetClass": "inc.evil.serde.JsonSerdeTest$EnumFieldValues",
+                   "__id": 1,
+                   "state": {
+                     "season": {
+                       "type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season",
+                       "value": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": "SPRING"}
+                     },
+                     "name": {"type": "java.lang.String", "value": "Mike"},
+                     "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": null}
+                   }
+                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
@@ -546,14 +549,17 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserializeFromJson_objectWithEnumFields() {
         String json = """
                 {
-                  "targetClass": "inc.evil.serde.JsonSerdeTest$EnumFieldValues",
-                  "state": {
-                    "season": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": "SPRING"},
-                    "name": {"type": "java.lang.String", "value": "Mike"},
-                    "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": null}
-                  },
-                  "__id": 1
-                }""";
+                   "targetClass": "inc.evil.serde.JsonSerdeTest$EnumFieldValues",
+                   "__id": 1,
+                   "state": {
+                     "season": {
+                       "type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season",
+                       "value": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": "SPRING"}
+                     },
+                     "name": {"type": "java.lang.String", "value": "Mike"},
+                     "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": null}
+                   }
+                 }""";
 
         EnumFieldValues actualDeserializedInstance = jsonSerde.deserialize(json, EnumFieldValues.class);
 
