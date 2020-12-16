@@ -287,7 +287,7 @@ public class JsonSerdeTest {
     public void shouldBeAbleToDeserializeFromJson_objectWithListFields(@JsonFile("/payloads/list-of-strings.json") String json) {
         ListOfStrings actualDummy = jsonSerde.deserialize(json, ListOfStrings.class);
 
-        ListOfStrings expectedDummy = new ListOfStrings(List.of("Funky", "shit"));
+        ListOfStrings expectedDummy = new ListOfStrings(Arrays.asList("Funky", "shit"));
         assertEquals(expectedDummy, actualDummy);
     }
 

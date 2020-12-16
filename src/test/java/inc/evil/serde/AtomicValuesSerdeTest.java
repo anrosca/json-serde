@@ -1,9 +1,12 @@
 package inc.evil.serde;
 
+import inc.evil.serde.extension.JsonFile;
+import inc.evil.serde.extension.JsonFileParameterSupplier;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,11 +15,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import static inc.evil.serde.util.TestUtils.assertJsonEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ExtendWith(JsonFileParameterSupplier.class)
 public class AtomicValuesSerdeTest {
     private final JsonMapper jsonMapper = new JsonMapper();
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithAtomicValuesFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithAtomicValuesFields(@JsonFile("/payloads/atomic-values.json") String expectedJson) {
         AtomicNumbers atomicNumbers = new AtomicNumbers(
                 new AtomicInteger(42),
                 new AtomicLong(66),
@@ -25,31 +29,11 @@ public class AtomicValuesSerdeTest {
 
         String actualJson = jsonMapper.serialize(atomicNumbers);
 
-        String expectedJson = """
-                {
-                  "targetClass" : "inc.evil.serde.AtomicValuesSerdeTest$AtomicNumbers",
-                  "state" : {
-                    "atomicInteger" : {"type" : "java.util.concurrent.atomic.AtomicInteger", "value" : 42},
-                    "atomicLong" : {"type" : "java.util.concurrent.atomic.AtomicLong", "value" : 66},
-                    "atomicBoolean": {"type": "java.util.concurrent.atomic.AtomicBoolean", "value": true}
-                  },
-                  "__id" : 1
-                }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithAtomicValuesFields() {
-        String json = """
-                {
-                  "targetClass" : "inc.evil.serde.AtomicValuesSerdeTest$AtomicNumbers",
-                  "state" : {
-                    "atomicInteger" : {"type" : "java.util.concurrent.atomic.AtomicInteger", "value" : 42},
-                    "atomicLong" : {"type" : "java.util.concurrent.atomic.AtomicLong", "value" : 66},
-                    "atomicBoolean": {"type": "java.util.concurrent.atomic.AtomicBoolean", "value": true}
-                  },
-                  "__id" : 1
-                }""";
+    public void shouldBeAbleToDeserializeFromJson_objectWithAtomicValuesFields(@JsonFile("/payloads/atomic-values.json")String json) {
 
         AtomicNumbers actualInstance = jsonMapper.deserialize(json, AtomicNumbers.class);
 
@@ -64,37 +48,16 @@ public class AtomicValuesSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_NullAtomicValues() {
+    public void shouldBeAbleToSerializeToJson_NullAtomicValues(@JsonFile("/payloads/null-atomic-values.json") String expectedJson) {
         AtomicNumbers atomicNumbers = new AtomicNumbers(null, null, null);
 
         String actualJson = jsonMapper.serialize(atomicNumbers);
 
-        String expectedJson = """
-            {
-              "targetClass": "inc.evil.serde.AtomicValuesSerdeTest$AtomicNumbers",
-              "state": {
-                "atomicInteger": {"type": "java.util.concurrent.atomic.AtomicInteger", "value": null},
-                "atomicLong": {"type": "java.util.concurrent.atomic.AtomicLong", "value": null},
-                "atomicBoolean": {"type": "java.util.concurrent.atomic.AtomicBoolean", "value": null}
-              },
-              "__id": 1
-            }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_NullAtomicValues() {
-        String json = """
-            {
-              "targetClass": "inc.evil.serde.AtomicValuesSerdeTest$AtomicNumbers",
-              "state": {
-                "atomicInteger": {"type": "java.util.concurrent.atomic.AtomicInteger", "value": null},
-                "atomicLong": {"type": "java.util.concurrent.atomic.AtomicLong", "value": null},
-                "atomicBoolean": {"type": "java.util.concurrent.atomic.AtomicBoolean", "value": null}
-              },
-              "__id": 1
-            }""";
-
+    public void shouldBeAbleToDeserializeFromJson_NullAtomicValues(@JsonFile("/payloads/null-atomic-values.json") String json) {
         AtomicNumbers actualInstance = jsonMapper.deserialize(json, AtomicNumbers.class);
 
         AtomicNumbers expectedInstance = new AtomicNumbers(null, null, null);

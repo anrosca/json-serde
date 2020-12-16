@@ -1,0 +1,14 @@
+{
+  "targetClass": "inc.evil.serde.ArraysOfPrimitiveWrappersSerdeTest$ArraysOfPrimitiveWrappers",
+  "state": {
+    "booleanArray": null,
+    "byteArray": null,
+    "charArray": null,
+    "shortArray": null,
+    "integerArray": null,
+    "longArray": null,
+    "floatArray": null,
+    "doubleArray": null
+  },
+  "__id": 1
+}

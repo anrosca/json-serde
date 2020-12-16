@@ -1,19 +1,23 @@
 package inc.evil.serde;
 
+import inc.evil.serde.extension.JsonFile;
+import inc.evil.serde.extension.JsonFileParameterSupplier;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static inc.evil.serde.util.TestUtils.assertJsonEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ExtendWith(JsonFileParameterSupplier.class)
 public class ArraysOfPrimitiveWrappersSerdeTest {
 
     private final JsonMapper jsonMapper = new JsonMapper();
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithArraysOfPrimitiveWrappersFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithArraysOfPrimitiveWrappersFields(@JsonFile("/payloads/primitive-wrapper-arrays.json") String expectedJson) {
         ArraysOfPrimitiveWrappers arraysOfPrimitiveWrappers = new ArraysOfPrimitiveWrappers(
                 new Boolean[]{true, false},
                 new Byte[]{1, 2},
@@ -27,42 +31,11 @@ public class ArraysOfPrimitiveWrappersSerdeTest {
 
         String actualJson = jsonMapper.serialize(arraysOfPrimitiveWrappers);
 
-        String expectedJson = """
-            {
-              "targetClass": "inc.evil.serde.ArraysOfPrimitiveWrappersSerdeTest$ArraysOfPrimitiveWrappers",
-              "state": {
-                "booleanArray": {"type": "[Ljava.lang.Boolean;", "value": [true, false]},
-                "byteArray": {"type": "[Ljava.lang.Byte;", "value": [1, 2]},
-                "charArray": {"type": "[Ljava.lang.Character;", "value": [87, 81]},
-                "shortArray": {"type": "[Ljava.lang.Short;", "value": [3, 4]},
-                "integerArray": {"type": "[Ljava.lang.Integer;", "value": [5, 6]},
-                "longArray": {"type": "[Ljava.lang.Long;", "value": [7, 8]},
-                "floatArray": {"type": "[Ljava.lang.Float;", "value": [0.5, 1.5]},
-                "doubleArray": {"type": "[Ljava.lang.Double;", "value": [1.55, 3.14]}
-              },
-              "__id": 1
-            }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithArraysOfPrimitiveWrappersFields() {
-        String json = """
-            {
-              "targetClass": "inc.evil.serde.ArraysOfPrimitiveWrappersSerdeTest$ArraysOfPrimitiveWrappers",
-              "state": {
-                "booleanArray": {"type": "[Ljava.lang.Boolean;", "value": [true, false]},
-                "byteArray": {"type": "[Ljava.lang.Byte;", "value": [1, 2]},
-                "charArray": {"type": "[Ljava.lang.Character;", "value": [87, 81]},
-                "shortArray": {"type": "[Ljava.lang.Short;", "value": [3, 4]},
-                "integerArray": {"type": "[Ljava.lang.Integer;", "value": [5, 6]},
-                "longArray": {"type": "[Ljava.lang.Long;", "value": [7, 8]},
-                "floatArray": {"type": "[Ljava.lang.Float;", "value": [0.5, 1.5]},
-                "doubleArray": {"type": "[Ljava.lang.Double;", "value": [1.55, 3.14]}
-              },
-              "__id": 1
-            }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithArraysOfPrimitiveWrappersFields(@JsonFile("/payloads/primitive-wrapper-arrays.json") String json) {
         ArraysOfPrimitiveWrappers actualInstance = jsonMapper.deserialize(json, ArraysOfPrimitiveWrappers.class);
 
         ArraysOfPrimitiveWrappers expectedInstance = new ArraysOfPrimitiveWrappers(
@@ -79,7 +52,7 @@ public class ArraysOfPrimitiveWrappersSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectsWithNullArraysOfPrimitives() {
+    public void shouldBeAbleToSerializeToJson_objectsWithNullArraysOfPrimitives(@JsonFile("/payloads/null-primitive-wrapper-arrays.json") String expectedJson) {
         ArraysOfPrimitiveWrappers arraysOfPrimitiveWrappers = new ArraysOfPrimitiveWrappers(
                 null,
                 null,
@@ -93,42 +66,11 @@ public class ArraysOfPrimitiveWrappersSerdeTest {
 
         String actualJson = jsonMapper.serialize(arraysOfPrimitiveWrappers);
 
-        String expectedJson = """
-            {
-              "targetClass": "inc.evil.serde.ArraysOfPrimitiveWrappersSerdeTest$ArraysOfPrimitiveWrappers",
-              "state": {
-                "booleanArray": null,
-                "byteArray": null,
-                "charArray": null,
-                "shortArray": null,
-                "integerArray": null,
-                "longArray": null,
-                "floatArray": null,
-                "doubleArray": null
-              },
-              "__id": 1
-            }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectsWithNullArraysOfPrimitives() {
-        String json = """
-            {
-              "targetClass": "inc.evil.serde.ArraysOfPrimitiveWrappersSerdeTest$ArraysOfPrimitiveWrappers",
-              "state": {
-                "booleanArray": null,
-                "byteArray": null,
-                "charArray": null,
-                "shortArray": null,
-                "integerArray": null,
-                "longArray": null,
-                "floatArray": null,
-                "doubleArray": null
-              },
-              "__id": 1
-            }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectsWithNullArraysOfPrimitives(@JsonFile("/payloads/null-primitive-wrapper-arrays.json") String json) {
         ArraysOfPrimitiveWrappers actualInstance = jsonMapper.deserialize(json, ArraysOfPrimitiveWrappers.class);
 
         ArraysOfPrimitiveWrappers expectedInstance = new ArraysOfPrimitiveWrappers(

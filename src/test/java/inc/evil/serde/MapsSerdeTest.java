@@ -1,9 +1,12 @@
 package inc.evil.serde;
 
+import inc.evil.serde.extension.JsonFile;
+import inc.evil.serde.extension.JsonFileParameterSupplier;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,11 +14,12 @@ import java.util.Map;
 import static inc.evil.serde.util.TestUtils.assertJsonEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ExtendWith(JsonFileParameterSupplier.class)
 public class MapsSerdeTest {
     private final JsonMapper jsonMapper = new JsonMapper();
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithHashMapFields() {
+    public void shouldBeAbleToSerializeToJson_objectWithHashMapFields(@JsonFile("/payloads/hashmap-fields.json") String expectedJson) {
         Map<String, User> users = new HashMap<>();
         users.put("Mike", new User("Mike"));
         users.put("John", new User("John"));
@@ -23,90 +27,11 @@ public class MapsSerdeTest {
 
         String actualJson = jsonMapper.serialize(mapFields);
 
-        String expectedJson = """
-                {
-                    "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
-                    "__id": 1,
-                    "state": {
-                      "users": {
-                        "type": "java.util.HashMap",
-                        "value": {
-                          "type": "java.util.HashMap",
-                          "value": [
-                            {
-                              "key": "Mike",
-                              "value": {
-                                "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                                "__id": 2,
-                                "state": {
-                                  "name": {"type": "java.lang.String", "value": "Mike"}
-                                }
-                              }
-                            },
-                            {
-                              "key": "John",
-                              "value": {
-                                "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                                "__id": 3,
-                                "state": {
-                                  "name": {"type": "java.lang.String", "value": "John"}
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      "moreUsers": {
-                        "type": "java.util.Map",
-                        "value": null
-                      }
-                    }
-                  }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithHashMapFields() {
-        String json = """
-                {
-                    "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
-                    "__id": 1,
-                    "state": {
-                      "users": {
-                        "type": "java.util.HashMap",
-                        "value": {
-                          "type": "java.util.HashMap",
-                          "value": [
-                            {
-                              "key": "Mike",
-                              "value": {
-                                "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                                "__id": 2,
-                                "state": {
-                                  "name": {"type": "java.lang.String", "value": "Mike"}
-                                }
-                              }
-                            },
-                            {
-                              "key": "John",
-                              "value": {
-                                "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                                "__id": 3,
-                                "state": {
-                                  "name": {"type": "java.lang.String", "value": "John"}
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      "moreUsers": {
-                        "type": "java.util.Map",
-                        "value": null
-                      }
-                    }
-                  }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithHashMapFields(@JsonFile("/payloads/hashmap-fields.json") String json) {
         MapFields actualInstance = jsonMapper.deserialize(json, MapFields.class);
 
         Map<String, User> users = new HashMap<>();
@@ -117,7 +42,7 @@ public class MapsSerdeTest {
     }
 
     @Test
-    public void shouldBeAbleToSerializeToJson_objectWithHashMapFieldsWithObjectKeys() {
+    public void shouldBeAbleToSerializeToJson_objectWithHashMapFieldsWithObjectKeys(@JsonFile("/payloads/hashmap-object-key.json") String expectedJson) {
         Map<User, String> users = new HashMap<>();
         users.put(new User("Mike"), "Mike");
         users.put(new User("John"), "John");
@@ -125,90 +50,11 @@ public class MapsSerdeTest {
 
         String actualJson = jsonMapper.serialize(mapFields);
 
-        String expectedJson = """
-                {
-                   "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
-                   "__id": 1,
-                   "state": {
-                     "users": {
-                       "type": "java.util.Map",
-                       "value": null
-                     },
-                     "moreUsers": {
-                       "type": "java.util.HashMap",
-                       "value": {
-                         "type": "java.util.HashMap",
-                         "value": [
-                           {
-                             "key": {
-                               "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                               "__id": 2,
-                               "state": {
-                                 "name": {"type": "java.lang.String", "value": "Mike"}
-                               }
-                             },
-                             "value": "Mike"
-                           },
-                           {
-                             "key": {
-                               "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                               "__id": 3,
-                               "state": {
-                                 "name": {"type": "java.lang.String", "value": "John"}
-                               }
-                             },
-                             "value": "John"
-                           }
-                         ]
-                       }
-                     }
-                   }
-                 }""";
         assertJsonEquals(expectedJson, actualJson);
     }
 
     @Test
-    public void shouldBeAbleToDeserializeFromJson_objectWithHashMapFieldsWithObjectKeys() {
-        String json = """
-                {
-                   "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
-                   "__id": 1,
-                   "state": {
-                     "users": {
-                       "type": "java.util.Map",
-                       "value": null
-                     },
-                     "moreUsers": {
-                       "type": "java.util.HashMap",
-                       "value": {
-                         "type": "java.util.HashMap",
-                         "value": [
-                           {
-                             "key": {
-                               "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                               "__id": 2,
-                               "state": {
-                                 "name": {"type": "java.lang.String", "value": "Mike"}
-                               }
-                             },
-                             "value": "Mike"
-                           },
-                           {
-                             "key": {
-                               "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-                               "__id": 3,
-                               "state": {
-                                 "name": {"type": "java.lang.String", "value": "John"}
-                               }
-                             },
-                             "value": "John"
-                           }
-                         ]
-                       }
-                     }
-                   }
-                 }""";
-
+    public void shouldBeAbleToDeserializeFromJson_objectWithHashMapFieldsWithObjectKeys(@JsonFile("/payloads/hashmap-object-key.json") String json) {
         MapFields actualInstance = jsonMapper.deserialize(json, MapFields.class);
 
         Map<User, String> users = new HashMap<>();

@@ -7,7 +7,10 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class JsonFileParameterSupplier implements ParameterResolver {
     @Override
@@ -27,10 +30,23 @@ public class JsonFileParameterSupplier implements ParameterResolver {
     private String readFile(String filePath) {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
-            getClass().getResourceAsStream(filePath).transferTo(buffer);
+            transferTo(getClass().getResourceAsStream(filePath), buffer);
             return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private long transferTo(InputStream in, OutputStream out) throws IOException {
+        Objects.requireNonNull(out, "out");
+        long transferred = 0;
+        int bufferSize = 4096;
+        byte[] buffer = new byte[bufferSize];
+        int read;
+        while ((read = in.read(buffer, 0, bufferSize)) >= 0) {
+            out.write(buffer, 0, read);
+            transferred += read;
+        }
+        return transferred;
     }
 }
