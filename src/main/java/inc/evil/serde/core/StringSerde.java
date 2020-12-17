@@ -2,12 +2,13 @@ package inc.evil.serde.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
 
 public class StringSerde implements SerializerDeserializer {
 
     @Override
-    public JsonNode serialize(Object instance) {
+    public JsonNode serialize(Object instance, SerdeContext serdeContext) {
         if (instance instanceof CharSequence) {
             return new TextNode(instance.toString());
         }
@@ -26,12 +27,12 @@ public class StringSerde implements SerializerDeserializer {
     }
 
     @Override
-    public Object deserialize(JsonNode node) throws Exception {
+    public Object deserialize(JsonNode node, SerdeContext serdeContext) throws Exception {
         return node.asText();
     }
 
     @Override
-    public Object deserialize(Class<?> resultingClass, JsonNode value) throws Exception {
+    public Object deserialize(Class<?> resultingClass, JsonNode value, SerdeContext serdeContext) throws Exception {
         String resultingString = value.asText().equals("null") ? null : value.asText();
         return castTo(resultingClass, resultingString);
     }

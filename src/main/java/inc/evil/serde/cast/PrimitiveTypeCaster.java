@@ -1,4 +1,4 @@
-package inc.evil.serde.util;
+package inc.evil.serde.cast;
 
 import java.util.HashMap;
 import java.util.Map;

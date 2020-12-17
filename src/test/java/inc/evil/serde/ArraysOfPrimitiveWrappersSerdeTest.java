@@ -8,7 +8,7 @@ import lombok.ToString;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static inc.evil.serde.util.TestUtils.assertJsonEquals;
+import static inc.evil.serde.cast.TestUtils.assertJsonEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(JsonFileParameterSupplier.class)

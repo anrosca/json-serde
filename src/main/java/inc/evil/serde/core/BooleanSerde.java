@@ -2,13 +2,14 @@ package inc.evil.serde.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
+import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BooleanSerde implements SerializerDeserializer {
     @Override
-    public JsonNode serialize(Object instance) {
+    public JsonNode serialize(Object instance, SerdeContext serdeContext) {
         if (instance instanceof Boolean) {
             return BooleanNode.valueOf((Boolean) instance);
         } else if (instance instanceof AtomicBoolean) {
@@ -29,12 +30,12 @@ public class BooleanSerde implements SerializerDeserializer {
     }
 
     @Override
-    public Object deserialize(JsonNode node) throws Exception {
+    public Object deserialize(JsonNode node, SerdeContext serdeContext) throws Exception {
         return node.asBoolean();
     }
 
     @Override
-    public Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception {
+    public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
         if (resultingClass == AtomicBoolean.class) {
             return new AtomicBoolean(node.asBoolean());
         }

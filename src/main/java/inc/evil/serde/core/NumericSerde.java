@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
-import inc.evil.serde.util.ValueCastUtil;
+import inc.evil.serde.cast.PrimitiveTypeCaster;
 
 public class NumericSerde implements SerializerDeserializer {
     private static final Class<?>[] NUMERIC_WRAPPER_TYPES = {
@@ -20,14 +20,8 @@ public class NumericSerde implements SerializerDeserializer {
             Double.class
     };
 
-    private final SerdeContext serdeContext;
-
-    public NumericSerde(SerdeContext serdeContext) {
-        this.serdeContext = serdeContext;
-    }
-
     @Override
-    public JsonNode serialize(Object instance) {
+    public JsonNode serialize(Object instance, SerdeContext serdeContext) {
         if (instance instanceof Double) {
             return new DoubleNode((Double) instance);
         } else if (instance instanceof Float) {
@@ -44,7 +38,7 @@ public class NumericSerde implements SerializerDeserializer {
 
     @Override
     public boolean canConsume(Class<?> clazz) {
-        return hasSuperclass(clazz, Character.class) || isPrimitiveOrWrapper(clazz);
+        return clazz.isPrimitive() || hasSuperclass(clazz, Character.class) || isPrimitiveOrWrapper(clazz);
     }
 
     @Override
@@ -72,13 +66,13 @@ public class NumericSerde implements SerializerDeserializer {
     }
 
     @Override
-    public Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception {
-        ValueCastUtil valueCastUtil = new ValueCastUtil();
-        return valueCastUtil.castValueTo(serdeContext.getNodeValue(node), resultingClass);
+    public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
+        PrimitiveTypeCaster primitiveTypeCaster = new PrimitiveTypeCaster();
+        return primitiveTypeCaster.castValueTo(serdeContext.getNodeValue(node), resultingClass);
     }
 
     @Override
-    public Object deserialize(JsonNode node) throws Exception {
+    public Object deserialize(JsonNode node, SerdeContext serdeContext) throws Exception {
         if (node.isFloat() || node.isDouble()) {
             return node.asDouble();
         } else if (node.isNumber()) {

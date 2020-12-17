@@ -1,6 +1,7 @@
 package inc.evil.serde.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
 
 import java.lang.invoke.SerializedLambda;
@@ -14,12 +15,12 @@ public class LambdaSerde implements SerializerDeserializer {
     }
 
     @Override
-    public JsonNode serialize(Object instance) {
+    public JsonNode serialize(Object instance, SerdeContext serdeContext) {
         try {
             Method writeReplaceMethod = instance.getClass().getDeclaredMethod("writeReplace");
             writeReplaceMethod.setAccessible(true);
             SerializedLambda serializedLambda = (SerializedLambda) writeReplaceMethod.invoke(instance);
-            return delegate.serialize(serializedLambda, serializedLambda.getClass());
+            return delegate.serialize(serializedLambda, serializedLambda.getClass(), serdeContext);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -31,18 +32,18 @@ public class LambdaSerde implements SerializerDeserializer {
     }
 
     @Override
-    public Object deserialize(JsonNode node) throws Exception {
+    public Object deserialize(JsonNode node, SerdeContext serdeContext) throws Exception {
         try {
             Method readResolveMethod = SerializedLambda.class.getDeclaredMethod("readResolve");
             readResolveMethod.setAccessible(true);
-            return readResolveMethod.invoke(delegate.deserialize(SerializedLambda.class, node.get("value")));
+            return readResolveMethod.invoke(delegate.deserialize(SerializedLambda.class, node.get("value"), serdeContext));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception {
+    public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
         return null;
     }
 }

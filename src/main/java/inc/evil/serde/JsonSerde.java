@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import inc.evil.serde.cast.PrimitiveTypeCaster;
 import inc.evil.serde.core.*;
-import inc.evil.serde.util.ValueCastUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -23,24 +23,16 @@ class JsonSerde implements SerdeContext {
     private final AtomicLong fieldIdGenerator = new AtomicLong();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ObjectFactory objectFactory = new ObjectFactory();
-    private final List<SerializerDeserializer> serializerDeserializers = Arrays.asList(
-            new NullSerde(),
-            new PrimitiveTypeSerde(this),
-            new ArraySerde(this, Arrays.asList(new CommonMapSerde(this), new CommonCollectionSerde(this))),
-            new CommonMapSerde(this),
-            new CommonCollectionSerde(this),
-            new CommonDateSerde(),
-            new ClassSerde(),
-            new AtomicNumbersSerde(),
-            new BigNumbersSerde(),
-            new EnumSerde(),
-            new StringSerde(),
-            new NumericSerde(this),
-            new BooleanSerde(),
-            new LambdaSerde(new ObjectSerde(this)),
-            new ObjectSerde(this)
-    );
-    private final ObjectSerializer objectSerializer = new ObjectSerializer(this);
+    private final List<SerializerDeserializer> serializerDeserializers;
+    private final SerializerDeserializer primarySerde = new ObjectSerde(Arrays.asList(
+            new ArraySerde(Arrays.asList(new CommonMapSerde(), new CommonCollectionSerde())),
+            new PrimitiveTypeSerde()
+
+    ));
+
+    public JsonSerde(List<SerializerDeserializer> serializerDeserializers) {
+        this.serializerDeserializers = serializerDeserializers;
+    }
 
     public String serialize(Object instance) {
         return toJson(instance).toPrettyString();
@@ -107,7 +99,7 @@ class JsonSerde implements SerdeContext {
     }
 
     private JsonNode serializeField(Field field, Object instance) throws Exception {
-        return objectSerializer.serialize(field.get(instance), field.getType());
+        return primarySerde.serialize(field.get(instance), field.getType(), this);
     }
 
     private String makeFieldName(Field field, boolean shouldQualify) {
@@ -129,7 +121,7 @@ class JsonSerde implements SerdeContext {
     public JsonNode serializeValue(Object instance) {
         for (SerializerDeserializer serde : serializerDeserializers) {
             if (serde.canConsume(instance != null ? instance.getClass() : null)) {
-                return serde.serialize(instance);
+                return serde.serialize(instance, this);
             }
         }
         return toJson(instance);
@@ -210,14 +202,14 @@ class JsonSerde implements SerdeContext {
     }
 
     private Object castValueTo(Object instance, Class<?> targetType) {
-        ValueCastUtil castUtil = new ValueCastUtil();
+        PrimitiveTypeCaster castUtil = new PrimitiveTypeCaster();
         return castUtil.castValueTo(instance, targetType);
     }
 
     public Object getNodeValue(JsonNode fieldNode) throws Exception {
         for (SerializerDeserializer serde : serializerDeserializers) {
             if (serde.canConsume(fieldNode)) {
-                return serde.deserialize(fieldNode);
+                return serde.deserialize(fieldNode, this);
             }
         }
         JsonNode value = fieldNode.get("value");
@@ -233,10 +225,10 @@ class JsonSerde implements SerdeContext {
             Class<?> resultingClass = Class.forName(type);
             for (SerializerDeserializer serde : serializerDeserializers) {
                 if (serde.canConsume(resultingClass)) {
-                    return serde.deserialize(resultingClass, value);
+                    return serde.deserialize(resultingClass, value, this);
                 }
                 if (serde.canConsume(value)) {
-                    return serde.deserialize(resultingClass, value);
+                    return serde.deserialize(resultingClass, value, this);
                 }
             }
         }

@@ -16,15 +16,10 @@ import java.util.LinkedList;
 
 public class CommonCollectionSerde implements SerializerDeserializer {
     private final ObjectFactory objectFactory = new ObjectFactory();
-    private final SerdeContext serdeContext;
-
-    public CommonCollectionSerde(SerdeContext serdeContext) {
-        this.serdeContext = serdeContext;
-    }
 
     @Override
     @SuppressWarnings("unchecked")
-    public JsonNode serialize(Object instance) {
+    public JsonNode serialize(Object instance, SerdeContext serdeContext) {
         Collection<Object> collection = (Collection<Object>) instance;
         ArrayNode jsonNodes = new ArrayNode(JsonNodeFactory.instance);
         ObjectNode collectionNode = new ObjectNode(JsonNodeFactory.instance);
@@ -43,7 +38,7 @@ public class CommonCollectionSerde implements SerializerDeserializer {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception {
+    public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
         if (!node.isArray()) {
             return serdeContext.getNodeValue(node);
         }

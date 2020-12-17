@@ -11,32 +11,29 @@ import java.util.Collections;
 import java.util.List;
 
 public class ObjectSerde implements SerializerDeserializer {
-    private final SerdeContext serdeContext;
     private final List<SerializerDeserializer> delegates;
     private final LambdaSerde lambdaSerde;
 
-    public ObjectSerde(SerdeContext serdeContext, List<SerializerDeserializer> delegates) {
-        this.serdeContext = serdeContext;
+    public ObjectSerde(List<SerializerDeserializer> delegates) {
         this.delegates = delegates;
         this.lambdaSerde = new LambdaSerde(this);
     }
 
-    public ObjectSerde(SerdeContext serdeContext) {
-        this.serdeContext = serdeContext;
+    public ObjectSerde() {
         this.delegates = Collections.emptyList();
         this.lambdaSerde = new LambdaSerde(this);
     }
 
     @Override
-    public JsonNode serialize(Object instance) {
+    public JsonNode serialize(Object instance, SerdeContext serdeContext) {
         return null;
     }
 
     @Override
-    public JsonNode serialize(Object instance, Class<?> type) {
+    public JsonNode serialize(Object instance, Class<?> type, SerdeContext serdeContext) {
         for (SerializerDeserializer serde : delegates) {
             if (serde.canConsume(type)) {
-                return serde.serialize(instance);
+                return serde.serialize(instance, serdeContext);
             }
         }
         ObjectNode fieldNode = new ObjectNode(JsonNodeFactory.instance);
@@ -56,17 +53,17 @@ public class ObjectSerde implements SerializerDeserializer {
     }
 
     @Override
-    public Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception {
+    public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
         return serdeContext.deserialize(node.toString(), resultingClass);
     }
 
     @Override
-    public Object deserialize(JsonNode node) throws Exception {
+    public Object deserialize(JsonNode node, SerdeContext serdeContext) throws Exception {
         JsonNode type = node.get("type");
         String className = type.asText();
         if (className != null) {
             if (className.contains("/")) {
-                return lambdaSerde.deserialize(node.get("value"));
+                return lambdaSerde.deserialize(node.get("value"), serdeContext);
             }
             Class<?> resultingClass = Class.forName(className);
             return serdeContext.deserialize(node.toString(), resultingClass);

@@ -14,14 +14,14 @@ import java.time.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static inc.evil.serde.util.TestUtils.assertJsonEquals;
+import static inc.evil.serde.cast.TestUtils.assertJsonEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(JsonFileParameterSupplier.class)
 public class JsonSerdeTest {
 
-    private final JsonSerde jsonSerde = new JsonSerde();
+    private final JsonSerde jsonSerde = new SerdeFactory().defaultSerde();
 
     @Test
     public void shouldBeAbleToSerializeToJson_objectWithClassFields(@JsonFile("/payloads/class-literals.json") String expectedJson) {

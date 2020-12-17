@@ -1,4 +1,4 @@
-package inc.evil.serde.util;
+package inc.evil.serde.cast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

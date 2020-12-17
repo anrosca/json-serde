@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public interface SerializerDeserializer {
 
-    JsonNode serialize(Object instance);
+    JsonNode serialize(Object instance, SerdeContext serdeContext);
 
-    default JsonNode serialize(Object instance, Class<?> type) {
-        return serialize(instance);
+    default JsonNode serialize(Object instance, Class<?> type, SerdeContext serdeContext) {
+        return serialize(instance, serdeContext);
     }
 
     boolean canConsume(Class<?> clazz);
@@ -16,9 +16,9 @@ public interface SerializerDeserializer {
         return false;
     }
 
-    Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception;
+    Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception;
 
-    default Object deserialize(JsonNode node) throws Exception {
+    default Object deserialize(JsonNode node, SerdeContext serdeContext) throws Exception {
         return null;
     }
 }

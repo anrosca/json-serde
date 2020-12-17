@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static inc.evil.serde.util.TestUtils.assertJsonEquals;
+import static inc.evil.serde.cast.TestUtils.assertJsonEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(JsonFileParameterSupplier.class)

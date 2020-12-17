@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.*;
 import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
-import inc.evil.serde.util.ValueCastUtil;
+import inc.evil.serde.cast.PrimitiveTypeCaster;
 
 import java.lang.reflect.Array;
 import java.util.List;
@@ -21,17 +21,15 @@ public class ArraySerde implements SerializerDeserializer {
             {Double.class, double.class},
     };
 
-    private final SerdeContext serdeContext;
     private final List<SerializerDeserializer> delegates;
-    private final ValueCastUtil valueCastUtil = new ValueCastUtil();
+    private final PrimitiveTypeCaster primitiveTypeCaster = new PrimitiveTypeCaster();
 
-    public ArraySerde(SerdeContext serdeContext, List<SerializerDeserializer> delegates) {
-        this.serdeContext = serdeContext;
+    public ArraySerde(List<SerializerDeserializer> delegates) {
         this.delegates = delegates;
     }
 
     @Override
-    public JsonNode serialize(Object array) {
+    public JsonNode serialize(Object array, SerdeContext serdeContext) {
         if (array == null) {
             return NullNode.getInstance();
         }
@@ -42,12 +40,12 @@ public class ArraySerde implements SerializerDeserializer {
         Class<?> componentType = array.getClass().getComponentType();
         for (int i = 0; i < Array.getLength(array); ++i) {
             Object currentItem = Array.get(array, i);
-            jsonNodes.add(serializeArrayItem(currentItem, componentType));
+            jsonNodes.add(serializeArrayItem(currentItem, componentType, serdeContext));
         }
         return objectNode;
     }
 
-    private JsonNode serializeArrayItem(Object currentItem, Class<?> componentType) {
+    private JsonNode serializeArrayItem(Object currentItem, Class<?> componentType, SerdeContext serdeContext) {
         if (isPrimitiveArray(componentType)) {
             return serdeContext.serializeValue(currentItem);
         } else if (currentItem != null && (!isWrapperOf(currentItem.getClass(), componentType))) {
@@ -88,20 +86,20 @@ public class ArraySerde implements SerializerDeserializer {
     }
 
     @Override
-    public Object deserialize(JsonNode node) throws Exception {
+    public Object deserialize(JsonNode node, SerdeContext serdeContext) throws Exception {
         for (SerializerDeserializer serde : delegates) {
             if (serde.canConsume(node)) {
-                return serde.deserialize(node);
+                return serde.deserialize(node, serdeContext);
             }
         }
         return null;
     }
 
     @Override
-    public Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception {
+    public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
         for (SerializerDeserializer serde : delegates) {
             if (serde.canConsume(resultingClass)) {
-                return serde.deserialize(resultingClass, node);
+                return serde.deserialize(resultingClass, node, serdeContext);
             }
         }
         ArrayNode arrayNode = (ArrayNode) node;
@@ -111,7 +109,7 @@ public class ArraySerde implements SerializerDeserializer {
         for (int i = 0; i < length; ++i) {
             JsonNode currentNode = arrayNode.get(i);
             Object value = currentNode.isObject() ? serdeContext.deserialize(currentNode.toString(), componentType) : serdeContext.getNodeValue(currentNode);
-            Array.set(resultingArray, i, shouldCastArrayElement(componentType, value) ? valueCastUtil.castValueTo(value, componentType) : value);
+            Array.set(resultingArray, i, shouldCastArrayElement(componentType, value) ? primitiveTypeCaster.castValueTo(value, componentType) : value);
         }
         return resultingArray;
     }

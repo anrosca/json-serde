@@ -16,15 +16,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CommonMapSerde implements SerializerDeserializer {
     private final ObjectFactory objectFactory = new ObjectFactory();
-    private final SerdeContext serdeContext;
-
-    public CommonMapSerde(SerdeContext serdeContext) {
-        this.serdeContext = serdeContext;
-    }
 
     @Override
     @SuppressWarnings("unchecked")
-    public JsonNode serialize(Object instance) {
+    public JsonNode serialize(Object instance, SerdeContext serdeContext) {
         Map<Object, Object> mapToSerialize = (Map<Object, Object>) instance;
         ObjectNode mapNode = new ObjectNode(JsonNodeFactory.instance);
         ArrayNode jsonNodes = new ArrayNode(JsonNodeFactory.instance);
@@ -46,7 +41,7 @@ public class CommonMapSerde implements SerializerDeserializer {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception {
+    public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
         if (!node.isArray()) {
             return serdeContext.getNodeValue(node);
         }

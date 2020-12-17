@@ -5,14 +5,9 @@ import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
 
 public class PrimitiveTypeSerde implements SerializerDeserializer {
-    private final SerdeContext serdeContext;
-
-    public PrimitiveTypeSerde(SerdeContext serdeContext) {
-        this.serdeContext = serdeContext;
-    }
 
     @Override
-    public JsonNode serialize(Object instance) {
+    public JsonNode serialize(Object instance, SerdeContext serdeContext) {
         return serdeContext.serializeValue(instance);
     }
 
@@ -22,7 +17,7 @@ public class PrimitiveTypeSerde implements SerializerDeserializer {
     }
 
     @Override
-    public Object deserialize(Class<?> resultingClass, JsonNode node) throws Exception {
+    public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
         return serdeContext.deserialize(node.toString(), resultingClass);
     }
 }
