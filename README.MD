@@ -11,6 +11,16 @@ JSON SERDE doesn't rely on getters/setter but works with fields directly.
 Upon deserialization JSON SERDE instantiates objects without invoking their constructors ([using Objenesis](http://objenesis.org/)).
 Apart from that, Jackson can't handle object graphs with circular dependencies. JSON SERDE can handle such object graphs.
 
+### Maven
+
+```xml
+    <dependency>
+      <groupId>com.github.anrosca</groupId>
+      <artifactId>json-serde</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+```
+
 ### Examples
 
 Let's say we have the following DTO (with no getters & setters):
