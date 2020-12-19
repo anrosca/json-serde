@@ -1,69 +1,106 @@
 package inc.evil.serde;
 
-import org.junit.jupiter.api.Test;
+import lombok.Value;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.StringJoiner;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PlainTypesSerdeTest {
     private final JsonMapper jsonMapper = new JsonMapper();
 
-    @Test
-    public void shouldBeAbleToSerializeAndDeserialize_plainArrays() {
-        int[] numbers = new int[]{1, 2, 3};
+    @MethodSource("providePlainArrays")
+    @ParameterizedTest
+    public void shouldBeAbleToSerializeAndDeserialize_plainArrays(Object initialArray) {
+        String json = jsonMapper.serialize(initialArray);
 
-        String json = jsonMapper.serialize(numbers);
+        Object actualArray = jsonMapper.deserialize(json, initialArray.getClass());
 
-        int[] actualNumbers = jsonMapper.deserialize(json, int[].class);
-
-        assertArrayEquals(numbers, actualNumbers);
+        assertArrayEquals(initialArray, actualArray);
     }
 
-    @Test
-    public void shouldBeAbleToSerializeAndDeserialize_plainIntegerArrays() {
-        Integer[] numbers = new Integer[]{1, 2, 3};
-
-        String json = jsonMapper.serialize(numbers);
-
-        Integer[] actualNumbers = jsonMapper.deserialize(json, Integer[].class);
-
-        assertArrayEquals(numbers, actualNumbers);
+    static Stream<Arguments> providePlainArrays() {
+        return Stream.of(
+                Arguments.of((Object) new byte[]{1, 2}),
+                Arguments.of((Object) new boolean[]{true, false}),
+                Arguments.of((Object) new char[]{'1', '2'}),
+                Arguments.of((Object) new short[]{3, 4}),
+                Arguments.of((Object) new int[]{1, 2}),
+                Arguments.of((Object) new long[]{1L, 2L}),
+                Arguments.of((Object) new float[]{1f, 2f}),
+                Arguments.of((Object) new double[]{1d, 2d}),
+                Arguments.of((Object) new Boolean[]{true, false}),
+                Arguments.of((Object) new Byte[]{1, 2}),
+                Arguments.of((Object) new Character[]{'1', '2'}),
+                Arguments.of((Object) new Short[]{1, 2}),
+                Arguments.of((Object) new Integer[]{1, 2}),
+                Arguments.of((Object) new Long[]{1L, 2L}),
+                Arguments.of((Object) new Float[]{1f, 2f}),
+                Arguments.of((Object) new Double[]{1d, 2d}),
+                Arguments.of((Object) new String[]{"Mike", "Dennis"}),
+                Arguments.of((Object) new Object[]{"Mike", 42, 'W', new User("John"), new ArrayList<>(singletonList("uno"))}),
+                Arguments.of((Object) new User[]{new User("Mike")})
+        );
     }
 
-    @Test
-    public void shouldBeAbleToSerializeAndDeserialize_plainHashMap() {
-        Map<String, Integer> expectedMap = new HashMap<>(Collections.singletonMap("one", 1));
+    @MethodSource("providePlainTypes")
+    @ParameterizedTest
+    public void shouldBeAbleToSerializeAndDeserialize_plainTypes(Object valueToSerialize) {
+        String json = jsonMapper.serialize(valueToSerialize);
 
-        String json = jsonMapper.serialize(expectedMap);
+        Object actualValue = jsonMapper.deserialize(json, valueToSerialize.getClass());
 
-        Map<String, Integer> actualMap = jsonMapper.deserialize(json, Map.class);
-
-        assertEquals(expectedMap, actualMap);
+        assertEquals(valueToSerialize, actualValue);
     }
 
-    @Test
-    public void shouldBeAbleToSerializeAndDeserialize_plainString() {
-        String expectedString = "Welcome!!!";
-
-        String json = jsonMapper.serialize(expectedString);
-
-        String actualString = jsonMapper.deserialize(json, String.class);
-
-        assertEquals(expectedString, actualString);
+    static Stream<Arguments> providePlainTypes() {
+        return Stream.of(
+                Arguments.of(true),
+                Arguments.of((byte) 1),
+                Arguments.of('w'),
+                Arguments.of((short) 2),
+                Arguments.of(3),
+                Arguments.of(4L),
+                Arguments.of(5.0f),
+                Arguments.of(6D),
+                Arguments.of("__funky__"),
+                Arguments.of(new HashMap<>(Collections.singletonMap("one", 1)))
+        );
     }
 
-    @Test
-    public void shouldBeAbleToSerializeAndDeserialize_plainInt() {
-        int expectedInt = 42;
+    private static void assertArrayEquals(Object expected, Object actual) {
+        if (expected != actual) {
+            assertEquals(Array.getLength(expected), Array.getLength(actual));
+            for (int i = 0; i < Array.getLength(expected); ++i) {
+                if (!Array.get(expected, i).equals(Array.get(actual, i))) {
+                    Assertions.fail("Arrays are not equal. Expected: " +
+                            arrayToString(expected) + " of class " + expected.getClass().getName() +
+                            ". Actual: " + arrayToString(actual) + " of class " + actual.getClass().getName());
+                }
+            }
+        }
+    }
 
-        String json = jsonMapper.serialize(expectedInt);
+    private static String arrayToString(Object array) {
+        StringJoiner joiner = new StringJoiner(",", "[", "]");
+        for (int i = 0; i < Array.getLength(array); ++i) {
+            joiner.add(Array.get(array, i).toString());
+        }
+        return joiner.toString();
+    }
 
-        int actualInt = jsonMapper.deserialize(json, int.class);
-
-        assertEquals(expectedInt, actualInt);
+    @Value
+    public static class User {
+        String firstName;
     }
 }

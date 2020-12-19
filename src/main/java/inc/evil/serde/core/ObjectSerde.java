@@ -62,6 +62,6 @@ public class ObjectSerde implements SerializerDeserializer {
             Class<?> resultingClass = Class.forName(className);
             return serdeContext.deserialize(node.toString(), resultingClass);
         }
-        throw new RuntimeException("ALARM");
+        throw new IllegalStateException("Could not deserialize node because of missing type information. Json node: " + node);
     }
 }

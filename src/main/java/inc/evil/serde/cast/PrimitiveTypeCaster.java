@@ -26,9 +26,10 @@ public class PrimitiveTypeCaster {
         CASTING_FUNCTION.put(Double.class, (value) -> ((Number) value).doubleValue());
     }
 
-    public Object castValueTo(Object instance, Class<?> targetType) {
+    @SuppressWarnings("unchecked")
+    public <T> T castValueTo(Object instance, Class<T> targetType) {
         if (instance == null)
             return null;
-        return CASTING_FUNCTION.getOrDefault(targetType, (value) -> value).apply(instance);
+        return (T) CASTING_FUNCTION.getOrDefault(targetType, (value) -> value).apply(instance);
     }
 }

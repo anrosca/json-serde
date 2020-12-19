@@ -137,21 +137,21 @@ class JsonSerde implements SerdeContext {
             if (isNull(json)) {
                 return null;
             }
-            return tryDeserialize(json);
+            return tryDeserialize(json, clazz);
         } catch (Exception e) {
             throw doThrow(e);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T tryDeserialize(String json) throws Exception {
+    private <T> T tryDeserialize(String json, Class<T> resultingType) throws Exception {
         JsonNode rootNode = objectMapper.readTree(json);
         if (rootNode.has("type")) {
             return (T) getValueAs(rootNode.get("value"), rootNode.get("type").asText());
         }
         for (SerializerDeserializer serde : serializerDeserializers) {
             if (serde.canConsume(rootNode)) {
-                return (T) serde.deserialize(rootNode, this);
+                return castValueTo(serde.deserialize(rootNode, this), resultingType);
             }
         }
         JsonNode stateNode = rootNode.get("state");
@@ -164,19 +164,20 @@ class JsonSerde implements SerdeContext {
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> fieldEntry = fields.next();
             JsonNode fieldNode = fieldEntry.getValue();
-            deserializeField(resultingClass, instance, fieldEntry, fieldNode);
+            deserializeField(instance, fieldEntry.getKey(), fieldNode);
         }
-        return (T) instance;
+        return castValueTo(instance, resultingType);
     }
 
     private boolean isNull(String json) {
         return json == null || json.equals("null");
     }
 
-    private void deserializeField(Class<?> resultingClass, Object instance, Map.Entry<String, JsonNode> fieldEntry, JsonNode fieldNode) throws Exception {
-        Field field = getDeclaredField(fieldEntry.getKey(), resultingClass);
+    private void deserializeField(Object instance, String fieldName, JsonNode fieldNode) throws Exception {
+        Field field = getDeclaredField(fieldName, instance.getClass());
         if (field == null) {
-            throw new FieldFieldException("Field " + fieldEntry.getKey() + " was not found present in class " + resultingClass.getName());
+            throw new FieldFieldException("Field " + fieldName + " was not found present in class " +
+                    instance.getClass().getName());
         }
         field.setAccessible(true);
         Object nodeValue = getNodeValue(fieldNode);
@@ -211,7 +212,7 @@ class JsonSerde implements SerdeContext {
         return fieldName.contains(".");
     }
 
-    private Object castValueTo(Object instance, Class<?> targetType) {
+    private <T> T castValueTo(Object instance, Class<T> targetType) {
         PrimitiveTypeCaster castUtil = new PrimitiveTypeCaster();
         return castUtil.castValueTo(instance, targetType);
     }
