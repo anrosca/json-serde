@@ -38,7 +38,7 @@ class JsonSerde implements SerdeContext {
         return toJson(instance).toPrettyString();
     }
 
-    private ObjectNode toJson(Object instance) {
+    private JsonNode toJson(Object instance) {
         try {
             if (wasSerialized(instance)) {
                 return getPreviouslySerializedInstance(instance);
@@ -54,7 +54,7 @@ class JsonSerde implements SerdeContext {
         throw (E) e;
     }
 
-    private ObjectNode getPreviouslySerializedInstance(Object instance) {
+    private JsonNode getPreviouslySerializedInstance(Object instance) {
         JsonNode visitedInstance = serializedInstances.get(instance);
         ObjectNode referenceNode = new ObjectNode(JsonNodeFactory.instance);
         referenceNode.set("type", new TextNode(REFERENCE_TO_OBJECT));
@@ -66,7 +66,12 @@ class JsonSerde implements SerdeContext {
         return serializedInstances.containsKey(instance);
     }
 
-    private ObjectNode trySerializeToJson(Object instance) throws Exception {
+    private JsonNode trySerializeToJson(Object instance) throws Exception {
+        for (SerializerDeserializer serde : serializerDeserializers) {
+            if (serde.canConsume(instance.getClass())) {
+                return serde.serialize(instance, this);
+            }
+        }
         ObjectNode rootNode = new ObjectNode(JsonNodeFactory.instance);
         rootNode.set("targetClass", new TextNode(instance.getClass().getName()));
         rootNode.set(FIELD_ID, new LongNode(fieldIdGenerator.incrementAndGet()));
@@ -78,7 +83,7 @@ class JsonSerde implements SerdeContext {
         return rootNode;
     }
 
-    private ObjectNode serializeFieldsOf(Object instance, Class<?> instanceClass) throws Exception {
+    private JsonNode serializeFieldsOf(Object instance, Class<?> instanceClass) throws Exception {
         ObjectNode stateNode = new ObjectNode(JsonNodeFactory.instance);
         boolean shouldQualifyFieldNames = shouldQualifyFieldNamesFor(instanceClass);
         do {
