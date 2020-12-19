@@ -12,16 +12,13 @@ import java.util.List;
 
 public class ObjectSerde implements SerializerDeserializer {
     private final List<SerializerDeserializer> delegates;
-    private final LambdaSerde lambdaSerde;
 
     public ObjectSerde(List<SerializerDeserializer> delegates) {
         this.delegates = delegates;
-        this.lambdaSerde = new LambdaSerde(this);
     }
 
     public ObjectSerde() {
         this.delegates = Collections.emptyList();
-        this.lambdaSerde = new LambdaSerde(this);
     }
 
     @Override
@@ -49,7 +46,7 @@ public class ObjectSerde implements SerializerDeserializer {
 
     @Override
     public boolean canConsume(JsonNode node) {
-        return node.isObject();
+        return node.isObject() && node.has("type");
     }
 
     @Override
@@ -62,9 +59,6 @@ public class ObjectSerde implements SerializerDeserializer {
         JsonNode type = node.get("type");
         String className = type.asText();
         if (className != null) {
-            if (className.contains("/")) {
-                return lambdaSerde.deserialize(node.get("value"), serdeContext);
-            }
             Class<?> resultingClass = Class.forName(className);
             return serdeContext.deserialize(node.toString(), resultingClass);
         }

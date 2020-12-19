@@ -149,6 +149,11 @@ class JsonSerde implements SerdeContext {
         if (rootNode.has("type")) {
             return (T) getValueAs(rootNode.get("value"), rootNode.get("type").asText());
         }
+        for (SerializerDeserializer serde : serializerDeserializers) {
+            if (serde.canConsume(rootNode)) {
+                return (T) serde.deserialize(rootNode, this);
+            }
+        }
         JsonNode stateNode = rootNode.get("state");
         String resultingClassName = rootNode.get("targetClass").asText();
         String fieldId = rootNode.get(FIELD_ID).asText();
@@ -236,8 +241,9 @@ class JsonSerde implements SerdeContext {
                     return serde.deserialize(resultingClass, value, this);
                 }
             }
+            return deserialize(value.toString(), resultingClass);
         }
-        return null;
+        throw new IllegalStateException("Cannot deserialize json node because of missing type information. Json: " + value);
     }
 
     public static class FieldFieldException extends RuntimeException {

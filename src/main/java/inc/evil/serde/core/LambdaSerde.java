@@ -32,6 +32,11 @@ public class LambdaSerde implements SerializerDeserializer {
     }
 
     @Override
+    public boolean canConsume(JsonNode node) {
+        return node.isObject() && node.has("type") && node.get("type").asText().contains("/");
+    }
+
+    @Override
     public Object deserialize(JsonNode node, SerdeContext serdeContext) throws Exception {
         try {
             Method readResolveMethod = SerializedLambda.class.getDeclaredMethod("readResolve");
@@ -44,6 +49,6 @@ public class LambdaSerde implements SerializerDeserializer {
 
     @Override
     public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
-        return null;
+        return deserialize(node, serdeContext);
     }
 }
