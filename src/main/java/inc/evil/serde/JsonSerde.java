@@ -3,15 +3,14 @@ package inc.evil.serde;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import inc.evil.serde.cast.PrimitiveTypeCaster;
-import inc.evil.serde.core.*;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 class JsonSerde implements SerdeContext {
@@ -22,13 +21,7 @@ class JsonSerde implements SerdeContext {
     private final Map<String, Object> deserializedInstances = new HashMap<>();
     private final AtomicLong fieldIdGenerator = new AtomicLong();
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final ObjectFactory objectFactory = new ObjectFactory();
     private final List<SerializerDeserializer> serializerDeserializers;
-    private final SerializerDeserializer primarySerde = new ObjectSerde(Arrays.asList(
-            new ArraySerde(Arrays.asList(new CommonMapSerde(), new CommonCollectionSerde())),
-            new PrimitiveTypeSerde()
-
-    ));
 
     public JsonSerde(List<SerializerDeserializer> serializerDeserializers) {
         this.serializerDeserializers = serializerDeserializers;
@@ -45,16 +38,11 @@ class JsonSerde implements SerdeContext {
             }
             return trySerializeToJson(instance);
         } catch (Exception e) {
-            throw doThrow(e);
+            throw new JsonSerializationException(e);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    static <E extends Exception> E doThrow(Exception e) throws E {
-        throw (E) e;
-    }
-
-    private JsonNode getPreviouslySerializedInstance(Object instance) {
+    public JsonNode getPreviouslySerializedInstance(Object instance) {
         JsonNode visitedInstance = serializedInstances.get(instance);
         ObjectNode referenceNode = new ObjectNode(JsonNodeFactory.instance);
         referenceNode.set("type", new TextNode(REFERENCE_TO_OBJECT));
@@ -62,67 +50,30 @@ class JsonSerde implements SerdeContext {
         return referenceNode;
     }
 
-    private boolean wasSerialized(Object instance) {
-        return serializedInstances.containsKey(instance);
-    }
-
-    private JsonNode trySerializeToJson(Object instance) throws Exception {
+    private JsonNode trySerializeToJson(Object instance) {
         for (SerializerDeserializer serde : serializerDeserializers) {
             if (serde.canConsume(instance.getClass())) {
                 return serde.serialize(instance, this);
             }
         }
-        ObjectNode rootNode = new ObjectNode(JsonNodeFactory.instance);
-        rootNode.set("targetClass", new TextNode(instance.getClass().getName()));
-        rootNode.set(FIELD_ID, new LongNode(fieldIdGenerator.incrementAndGet()));
-        Class<?> instanceClass = instance.getClass();
-        if (!wasSerialized(instance)) {
-            serializedInstances.put(instance, rootNode);
-        }
-        rootNode.set("state", serializeFieldsOf(instance, instanceClass));
-        return rootNode;
+        throw new IllegalStateException("No serializer found for class: " + instance.getClass());
     }
 
-    private JsonNode serializeFieldsOf(Object instance, Class<?> instanceClass) throws Exception {
-        ObjectNode stateNode = new ObjectNode(JsonNodeFactory.instance);
-        boolean shouldQualifyFieldNames = shouldQualifyFieldNamesFor(instanceClass);
-        do {
-            processFieldsFor(instance, stateNode, instanceClass, shouldQualifyFieldNames);
-        } while ((instanceClass = instanceClass.getSuperclass()) != null);
-        return stateNode;
+    @Override
+    public Object getPreviouslyDeserializedInstance(String value) {
+        return deserializedInstances.get(value);
     }
 
-    private void processFieldsFor(Object instance, ObjectNode stateNode, Class<?> instanceClass, boolean shouldQualifyFieldNames) throws Exception {
-        for (Field field : instanceClass.getDeclaredFields()) {
-            field.setAccessible(true);
-            int fieldModifiers = field.getModifiers();
-            if (Modifier.isStatic(fieldModifiers)) {
-                continue;
-            }
-            stateNode.set(makeFieldName(field, shouldQualifyFieldNames), serializeField(field, instance));
-        }
+    public boolean wasSerialized(Object instance) {
+        return serializedInstances.containsKey(instance);
     }
 
-    private JsonNode serializeField(Field field, Object instance) throws Exception {
-        return primarySerde.serialize(field.get(instance), field.getType(), this);
+    @Override
+    public void addSerializedInstance(Object instance, ObjectNode rootNode) {
+        serializedInstances.put(instance, rootNode);
     }
 
-    private String makeFieldName(Field field, boolean shouldQualify) {
-        return shouldQualify ? field.getDeclaringClass().getName() + "." + field.getName() : field.getName();
-    }
-
-    private boolean shouldQualifyFieldNamesFor(Class<?> clazz) {
-        Set<String> fieldNames = new HashSet<>();
-        do {
-            for (Field field : clazz.getDeclaredFields()) {
-                if (!fieldNames.add(field.getName())) {
-                    return true;
-                }
-            }
-        } while ((clazz = clazz.getSuperclass()) != null);
-        return false;
-    }
-
+    @Override
     public JsonNode serializeValue(Object instance) {
         for (SerializerDeserializer serde : serializerDeserializers) {
             if (serde.canConsume(instance != null ? instance.getClass() : null)) {
@@ -139,8 +90,18 @@ class JsonSerde implements SerdeContext {
             }
             return tryDeserialize(json, clazz);
         } catch (Exception e) {
-            throw doThrow(e);
+            throw new JsonDeserializationException(e);
         }
+    }
+
+    @Override
+    public void addDeserializedInstance(String objectId, Object instance) {
+        deserializedInstances.put(objectId, instance);
+    }
+
+    @Override
+    public long generateObjectId() {
+        return fieldIdGenerator.incrementAndGet();
     }
 
     @SuppressWarnings("unchecked")
@@ -154,62 +115,11 @@ class JsonSerde implements SerdeContext {
                 return castValueTo(serde.deserialize(rootNode, this), resultingType);
             }
         }
-        JsonNode stateNode = rootNode.get("state");
-        String resultingClassName = rootNode.get("targetClass").asText();
-        String fieldId = rootNode.get(FIELD_ID).asText();
-        Class<?> resultingClass = Class.forName(resultingClassName);
-        Object instance = objectFactory.makeInstance(resultingClass);
-        deserializedInstances.put(fieldId, instance);
-        Iterator<Map.Entry<String, JsonNode>> fields = stateNode.fields();
-        while (fields.hasNext()) {
-            Map.Entry<String, JsonNode> fieldEntry = fields.next();
-            JsonNode fieldNode = fieldEntry.getValue();
-            deserializeField(instance, fieldEntry.getKey(), fieldNode);
-        }
-        return castValueTo(instance, resultingType);
+        throw new IllegalStateException("No deserializer found for class: " + resultingType.getName());
     }
 
     private boolean isNull(String json) {
         return json == null || json.equals("null");
-    }
-
-    private void deserializeField(Object instance, String fieldName, JsonNode fieldNode) throws Exception {
-        Field field = getDeclaredField(fieldName, instance.getClass());
-        if (field == null) {
-            throw new FieldFieldException("Field " + fieldName + " was not found present in class " +
-                    instance.getClass().getName());
-        }
-        field.setAccessible(true);
-        Object nodeValue = getNodeValue(fieldNode);
-        field.set(instance, castValueTo(nodeValue, field.getType()));
-    }
-
-    private Field getDeclaredField(String fieldName, Class<?> clazz) {
-        try {
-            return tryGetDeclaredField(fieldName, clazz);
-        } catch (Exception e) {
-            return getDeclaredField(fieldName, clazz.getSuperclass());
-        }
-    }
-
-    private Field tryGetDeclaredField(String fieldName, Class<?> clazz) throws Exception {
-        if (clazz == null) {
-            return null;
-        } else if (isQualifiedField(fieldName)) {
-            return getQualifiedField(fieldName);
-        }
-        return clazz.getDeclaredField(fieldName);
-    }
-
-    private Field getQualifiedField(String qualifiedFieldName) throws Exception {
-        String className = qualifiedFieldName.substring(0, qualifiedFieldName.lastIndexOf("."));
-        String fieldName = qualifiedFieldName.substring(qualifiedFieldName.lastIndexOf(".") + 1);
-        Class<?> fieldClass = Class.forName(className);
-        return fieldClass.getDeclaredField(fieldName);
-    }
-
-    private boolean isQualifiedField(String fieldName) {
-        return fieldName.contains(".");
     }
 
     private <T> T castValueTo(Object instance, Class<T> targetType) {
@@ -217,7 +127,7 @@ class JsonSerde implements SerdeContext {
         return castUtil.castValueTo(instance, targetType);
     }
 
-    public Object getNodeValue(JsonNode fieldNode) throws Exception {
+    public Object deserializeValue(JsonNode fieldNode) throws Exception {
         for (SerializerDeserializer serde : serializerDeserializers) {
             if (serde.canConsume(fieldNode)) {
                 return serde.deserialize(fieldNode, this);
@@ -245,11 +155,5 @@ class JsonSerde implements SerdeContext {
             return deserialize(value.toString(), resultingClass);
         }
         throw new IllegalStateException("Cannot deserialize json node because of missing type information. Json: " + value);
-    }
-
-    public static class FieldFieldException extends RuntimeException {
-        public FieldFieldException(String message) {
-            super(message);
-        }
     }
 }

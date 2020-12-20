@@ -4,9 +4,9 @@
   "state": {
     "season": {
       "type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season",
-      "value": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": "SPRING"}
+      "value": "SPRING"
     },
-    "name": {"type": "java.lang.String", "value": "Mike"},
-    "nullableSeason": {"type": "inc.evil.serde.JsonSerdeTest$EnumFieldValues$Season", "value": null}
+    "name": "Mike",
+    "nullableSeason": null
   }
 }

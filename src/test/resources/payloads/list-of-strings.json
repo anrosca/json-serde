@@ -3,26 +3,23 @@
   "__id": 1,
   "state": {
     "values": {
-      "type": "java.util.Arrays$ArrayList",
-      "value": {
-        "targetClass": "java.util.Arrays$ArrayList",
-        "__id": 2,
-        "state": {
-          "a": {
-            "type": "[Ljava.lang.String;",
-            "value": [
-              {
-                "type": "java.lang.String",
-                "value": "Funky"
-              },
-              {
-                "type": "java.lang.String",
-                "value": "shit"
-              }
-            ]
-          },
-          "modCount": 0
-        }
+      "targetClass": "java.util.Arrays$ArrayList",
+      "__id": 2,
+      "state": {
+        "a": {
+          "type": "[Ljava.lang.String;",
+          "value": [
+            {
+              "type": "java.lang.String",
+              "value": "Funky"
+            },
+            {
+              "type": "java.lang.String",
+              "value": "shit"
+            }
+          ]
+        },
+        "modCount": 0
       }
     }
   }

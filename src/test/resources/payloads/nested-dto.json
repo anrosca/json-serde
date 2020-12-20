@@ -3,20 +3,11 @@
   "__id": 1,
   "state": {
     "user": {
-      "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-      "value": {
-        "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-        "__id": 2,
-        "state": {
-          "firstName": {
-            "type": "java.lang.String",
-            "value": "Mike"
-          },
-          "lastName": {
-            "type": "java.lang.String",
-            "value": "Smith"
-          }
-        }
+      "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
+      "__id": 2,
+      "state": {
+        "firstName": "Mike",
+        "lastName": "Smith"
       }
     },
     "age": 42

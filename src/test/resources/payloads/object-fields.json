@@ -1,8 +1,11 @@
 {
   "targetClass": "inc.evil.serde.JsonSerdeTest$UpcastToObject",
+  "__id": 1,
   "state": {
-    "source": {"type": "java.lang.Class", "value": "java.lang.String"},
-    "name": {"type": "java.lang.String", "value": "John"}
-  },
-  "__id": 1
+    "source": {
+      "type": "java.lang.Class",
+      "value": "java.lang.String"
+    },
+    "name": "John"
+  }
 }

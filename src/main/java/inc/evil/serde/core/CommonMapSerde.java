@@ -43,7 +43,7 @@ public class CommonMapSerde implements SerializerDeserializer {
     @SuppressWarnings("unchecked")
     public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
         if (!node.isArray()) {
-            return serdeContext.getNodeValue(node);
+            return serdeContext.deserializeValue(node);
         }
         ArrayNode arrayNode = (ArrayNode) node;
         Map<Object, Object> map = (Map<Object, Object>) objectFactory.makeInstance(resultingClass);
@@ -51,8 +51,8 @@ public class CommonMapSerde implements SerializerDeserializer {
             JsonNode currentNode = arrayNode.get(i);
             JsonNode keyNode = currentNode.get("key");
             JsonNode valueNode = currentNode.get("value");
-            Object key = keyNode.isObject() ? serdeContext.deserialize(keyNode.toString(), resultingClass) : serdeContext.getNodeValue(keyNode);
-            Object value = valueNode.isObject() ? serdeContext.deserialize(valueNode.toString(), resultingClass) : serdeContext.getNodeValue(valueNode);
+            Object key = keyNode.isObject() ? serdeContext.deserialize(keyNode.toString(), resultingClass) : serdeContext.deserializeValue(keyNode);
+            Object value = valueNode.isObject() ? serdeContext.deserialize(valueNode.toString(), resultingClass) : serdeContext.deserializeValue(valueNode);
             map.put(key, value);
         }
         return map;

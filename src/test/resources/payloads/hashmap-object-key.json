@@ -2,37 +2,31 @@
   "targetClass": "inc.evil.serde.MapsSerdeTest$MapFields",
   "__id": 1,
   "state": {
-    "users": {
-      "type": "java.util.Map",
-      "value": null
-    },
+    "users": null,
     "moreUsers": {
       "type": "java.util.HashMap",
-      "value": {
-        "type": "java.util.HashMap",
-        "value": [
-          {
-            "key": {
-              "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-              "__id": 2,
-              "state": {
-                "name": {"type": "java.lang.String", "value": "Mike"}
-              }
-            },
-            "value": "Mike"
+      "value": [
+        {
+          "key": {
+            "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+            "__id": 2,
+            "state": {
+              "name": "Mike"
+            }
           },
-          {
-            "key": {
-              "targetClass": "inc.evil.serde.MapsSerdeTest$User",
-              "__id": 3,
-              "state": {
-                "name": {"type": "java.lang.String", "value": "John"}
-              }
-            },
-            "value": "John"
-          }
-        ]
-      }
+          "value": "Mike"
+        },
+        {
+          "key": {
+            "targetClass": "inc.evil.serde.MapsSerdeTest$User",
+            "__id": 3,
+            "state": {
+              "name": "John"
+            }
+          },
+          "value": "John"
+        }
+      ]
     }
   }
 }

@@ -26,7 +26,8 @@ public class ClassSerdeTest {
     public void shouldBeAbleToSerializeClasses() {
         JsonNode serializedNode = classSerde.serialize(String.class, serdeContext);
 
-        assertEquals(String.class.getName(), serializedNode.asText());
+        assertEquals(String.class.getName(), serializedNode.get("value").asText());
+        assertEquals(Class.class.getName(), serializedNode.get("type").asText());
     }
 
     @Test

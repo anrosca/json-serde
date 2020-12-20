@@ -108,7 +108,7 @@ public class ArraySerde implements SerializerDeserializer {
         Class<?> componentType = resultingClass.getComponentType();
         for (int i = 0; i < length; ++i) {
             JsonNode currentNode = arrayNode.get(i);
-            Object value = currentNode.isObject() ? serdeContext.deserialize(currentNode.toString(), componentType) : serdeContext.getNodeValue(currentNode);
+            Object value = currentNode.isObject() ? serdeContext.deserialize(currentNode.toString(), componentType) : serdeContext.deserializeValue(currentNode);
             Array.set(resultingArray, i, shouldCastArrayElement(componentType, value) ? primitiveTypeCaster.castValueTo(value, componentType) : value);
         }
         return resultingArray;

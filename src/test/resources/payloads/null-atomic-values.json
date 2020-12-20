@@ -1,9 +1,9 @@
 {
   "targetClass": "inc.evil.serde.AtomicValuesSerdeTest$AtomicNumbers",
+  "__id": 1,
   "state": {
-    "atomicInteger": {"type": "java.util.concurrent.atomic.AtomicInteger", "value": null},
-    "atomicLong": {"type": "java.util.concurrent.atomic.AtomicLong", "value": null},
-    "atomicBoolean": {"type": "java.util.concurrent.atomic.AtomicBoolean", "value": null}
-  },
-  "__id": 1
+    "atomicInteger": null,
+    "atomicLong": null,
+    "atomicBoolean": null
+  }
 }

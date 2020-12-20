@@ -33,7 +33,8 @@ public class LambdaSerde implements SerializerDeserializer {
 
     @Override
     public boolean canConsume(JsonNode node) {
-        return node.isObject() && node.has("type") && node.get("type").asText().contains("/");
+        return node.isObject() && node.has("type") &&
+                (node.get("type").asText().contains("/") || node.get("type").asText().equals(SerializedLambda.class.getName()));
     }
 
     @Override

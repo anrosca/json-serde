@@ -1,11 +1,8 @@
 {
-  "targetClass" : "inc.evil.serde.JsonSerdeTest$IgnoreStaticFields",
-  "state" : {
-    "name" : {
-      "type" : "java.lang.String",
-      "value" : "Mike"
-    },
-    "age" : 666
-  },
-  "__id": 1
+  "targetClass": "inc.evil.serde.JsonSerdeTest$IgnoreStaticFields",
+  "__id": 1,
+  "state": {
+    "age": 666,
+    "name": "Mike"
+  }
 }

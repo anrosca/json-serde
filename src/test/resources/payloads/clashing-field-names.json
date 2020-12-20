@@ -1,17 +1,15 @@
 {
   "targetClass": "inc.evil.serde.JsonSerdeTest$ClashingFieldNames",
+  "__id": 1,
   "state": {
     "inc.evil.serde.JsonSerdeTest$ClashingFieldNames.name": {
-      "type": "inc.evil.serde.JsonSerdeTest$StringFields",
-      "value": {
-        "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
-        "state": {
-          "firstName": {"type": "java.lang.String", "value": "Mike"},
-          "lastName": {"type": "java.lang.String", "value": "Smith"}},
-        "__id": 2
+      "targetClass": "inc.evil.serde.JsonSerdeTest$StringFields",
+      "__id": 2,
+      "state": {
+        "firstName": "Mike",
+        "lastName": "Smith"
       }
     },
-    "inc.evil.serde.JsonSerdeTest$Named.name": {"type": "java.lang.String", "value": "John"}
-  },
-  "__id": 1
+    "inc.evil.serde.JsonSerdeTest$Named.name": "John"
+  }
 }

@@ -1,7 +1,7 @@
 {
   "targetClass": "inc.evil.serde.JsonSerdeTest$NullInterfaceFields",
+  "__id": 1,
   "state": {
-    "strings": {"type": "java.util.List", "value": null}
-  },
-  "__id": 1
+    "strings": null
+  }
 }

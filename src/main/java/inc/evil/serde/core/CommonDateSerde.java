@@ -1,6 +1,8 @@
 package inc.evil.serde.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
@@ -22,7 +24,23 @@ public class CommonDateSerde implements SerializerDeserializer {
 
     @Override
     public JsonNode serialize(Object instance, SerdeContext serdeContext) {
-        return new TextNode(instance.toString());
+        ObjectNode objectNode = new ObjectNode(JsonNodeFactory.instance);
+        objectNode.set("type", new TextNode(instance.getClass().getName()));
+        objectNode.set("value", new TextNode(instance.toString()));
+        return objectNode;
+    }
+
+    @Override
+    public boolean canConsume(JsonNode node) {
+        return node.has("type") &&
+                Arrays.stream(SUPPORTED_DATE_TYPES)
+                        .map(Class::getName)
+                        .anyMatch(dateType -> dateType.equals(node.get("type").asText()));
+    }
+
+    @Override
+    public Object deserialize(JsonNode node, SerdeContext serdeContext) throws Exception {
+        return deserialize(Class.forName(node.get("type").asText()), node.get("value"), serdeContext);
     }
 
     @Override

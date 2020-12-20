@@ -34,7 +34,6 @@ public class AtomicValuesSerdeTest {
 
     @Test
     public void shouldBeAbleToDeserializeFromJson_objectWithAtomicValuesFields(@JsonFile("/payloads/atomic-values.json")String json) {
-
         AtomicNumbers actualInstance = jsonMapper.deserialize(json, AtomicNumbers.class);
 
         AtomicNumbers expectedInstance = new AtomicNumbers(

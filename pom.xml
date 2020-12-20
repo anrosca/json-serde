@@ -12,7 +12,7 @@
 
     <groupId>com.github.anrosca</groupId>
     <artifactId>json-serde</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
 
     <properties>
         <java.version>1.8</java.version>
@@ -154,4 +154,6 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
     </distributionManagement>
+
+    <url>https://github.com/anrosca/json-serde</url>
 </project>

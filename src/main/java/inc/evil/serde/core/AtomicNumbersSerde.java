@@ -1,8 +1,10 @@
 package inc.evil.serde.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.LongNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import inc.evil.serde.SerdeContext;
 import inc.evil.serde.SerializerDeserializer;
 
@@ -13,7 +15,25 @@ public class AtomicNumbersSerde implements SerializerDeserializer {
     @Override
     public JsonNode serialize(Object instance, SerdeContext serdeContext) {
         Number number = (Number) instance;
-        return new LongNode(number.longValue());
+        ObjectNode objectNode = new ObjectNode(JsonNodeFactory.instance);
+        objectNode.set("type", new TextNode(instance.getClass().getName()));
+        objectNode.set("value", new LongNode(number.longValue()));
+        return objectNode;
+    }
+
+    @Override
+    public boolean canConsume(JsonNode node) {
+        if (node.has("type")) {
+            String typeName = node.get("type").asText();
+            return typeName.equals(AtomicLong.class.getName()) || typeName.equals(AtomicInteger.class.getName());
+        }
+        return false;
+    }
+
+    @Override
+    public Object deserialize(JsonNode node, SerdeContext serdeContext) throws Exception {
+        String typeName = node.get("type").asText();
+        return deserialize(Class.forName(typeName), node.get("value"), serdeContext);
     }
 
     @Override

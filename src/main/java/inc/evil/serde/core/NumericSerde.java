@@ -68,7 +68,7 @@ public class NumericSerde implements SerializerDeserializer {
     @Override
     public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
         PrimitiveTypeCaster primitiveTypeCaster = new PrimitiveTypeCaster();
-        return primitiveTypeCaster.castValueTo(serdeContext.getNodeValue(node), resultingClass);
+        return primitiveTypeCaster.castValueTo(serdeContext.deserializeValue(node), resultingClass);
     }
 
     @Override

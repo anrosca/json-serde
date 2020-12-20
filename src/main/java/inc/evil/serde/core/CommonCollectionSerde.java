@@ -40,13 +40,13 @@ public class CommonCollectionSerde implements SerializerDeserializer {
     @SuppressWarnings("unchecked")
     public Object deserialize(Class<?> resultingClass, JsonNode node, SerdeContext serdeContext) throws Exception {
         if (!node.isArray()) {
-            return serdeContext.getNodeValue(node);
+            return serdeContext.deserializeValue(node);
         }
         ArrayNode arrayNode = (ArrayNode) node;
         Collection<Object> collection = (Collection<Object>) objectFactory.makeInstance(resultingClass);
         for (int i = 0; i < arrayNode.size(); ++i) {
             JsonNode currentNode = arrayNode.get(i);
-            Object value = currentNode.isObject() ? serdeContext.deserialize(currentNode.toString(), resultingClass) : serdeContext.getNodeValue(currentNode);
+            Object value = currentNode.isObject() ? serdeContext.deserialize(currentNode.toString(), resultingClass) : serdeContext.deserializeValue(currentNode);
             collection.add(value);
         }
         return collection;

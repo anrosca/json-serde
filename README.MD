@@ -17,7 +17,7 @@ Apart from that, Jackson can't handle object graphs with circular dependencies. 
     <dependency>
       <groupId>com.github.anrosca</groupId>
       <artifactId>json-serde</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.1</version>
     </dependency>
 ```
 
